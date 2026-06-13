@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the underlying study."
+type: software
+title: "Winterstromluecke Schweiz 2050 - Interaktive Parameteranalyse"
+abstract: "Interactive web visualization of Kelevitz et al. (Energies 2025, 18, 5601). Shows the influence of four building-sector parameters on Switzerland's projected winter electricity gap in 2050."
+license: MIT
+repository-code: "https://github.com/USERNAME/winterstromluecke-2050"
+authors:
+  - name: "Institut fuer Solartechnik SPF, Ostschweizer Fachhochschule OST"
+
+references:
+  - type: article
+    title: "Influence of Scenarios for Space Heating and Domestic Hot Water in Buildings on the Winter Electricity Demand of Switzerland in 2050"
+    authors:
+      - family-names: "Kelevitz"
+        given-names: "Krisztina"
+      - family-names: "Haller"
+        given-names: "Michel"
+      - family-names: "Frommelt"
+        given-names: "Matthias"
+      - family-names: "Meier"
+        given-names: "Boris"
+    journal: "Energies"
+    volume: 18
+    issue: 21
+    start: 5601
+    end: 5601
+    year: 2025
+    doi: "10.3390/en18215601"
