@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Winterstromlücke Schweiz 2050 | Parameteranalyse</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f0eeeb;
+  --white:#ffffff;
+  --border:#dcd8d3;
+  --border-light:#e8e4e0;
+  --text:#1a1a1a;
+  --muted:#5c5c5c;
+  --faint:#f7f5f2;
+  --red:#E8332A;
+  --red-hover:#c9291f;
+  --orange:#D96018;
+  --gold:#B08800;
+  --green:#2d7a4a;
+  --blue:#1A5BA6;
+  --param-bg:#16213a;
+  --param-s:#1e2e4a;
+  --param-border:rgba(255,255,255,0.1);
+  --param-text:#e8f0fa;
+  --param-muted:#7a96bc;
+  --font:'DM Sans',sans-serif;
+  --mono:'IBM Plex Mono',monospace;
+}
+html,body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;line-height:1.5}
+
+/* ── Top header ─────────────────────────────────── */
+.site-header{background:var(--white);border-bottom:1px solid var(--border);padding:0 40px;display:flex;align-items:stretch;gap:0;height:52px}
+.brand{display:flex;align-items:center;gap:12px;padding-right:32px;border-right:1px solid var(--border-light);margin-right:32px;flex-shrink:0}
+.brand-logo{font-size:20px;font-weight:700;letter-spacing:-.5px}
+.brand-logo span{color:var(--red)}
+.brand-sub{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);line-height:1.2;padding-top:1px}
+.nav-tabs{display:flex;align-items:stretch;gap:0}
+.nav-tab{display:flex;align-items:center;padding:0 18px;font-size:13px;font-weight:400;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
+.nav-tab:hover{color:var(--text)}
+.nav-tab.active{color:var(--text);font-weight:600;border-bottom-color:var(--red)}
+.header-right{margin-left:auto;display:flex;align-items:center;font-size:12px;color:var(--muted)}
+
+/* ── Page title strip ──────────────────────────── */
+.page-title-bar{background:var(--white);border-bottom:1px solid var(--border);padding:18px 40px 0}
+.page-eyebrow{font-size:11px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--red);margin-bottom:6px}
+.page-title{font-size:28px;font-weight:700;color:var(--text);letter-spacing:-.4px;padding-bottom:16px;line-height:1.2}
+.page-title em{color:var(--red);font-style:normal}
+
+/* ── Main layout ─────────────────────────────────── */
+main{max-width:1120px;margin:0 auto;padding:32px 40px 0}
+
+/* ── Study info ──────────────────────────────────── */
+.study-card{background:var(--white);border:1px solid var(--border);border-left:3px solid var(--red);padding:18px 22px;margin-bottom:28px}
+.study-badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--red);background:#fdeeec;padding:3px 9px;margin-bottom:10px}
+.study-text{font-size:13px;color:var(--muted);line-height:1.75}
+.study-text strong{color:var(--text);font-weight:600}
+.study-text em{font-style:italic}
+
+/* ── Section label ───────────────────────────────── */
+.slbl{font-size:11px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;border-left:2px solid var(--red);padding-left:8px}
+
+/* ── Metrics ─────────────────────────────────────── */
+.metrics{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);margin-bottom:28px}
+.mc{background:var(--white);padding:20px 24px}
+.mc-lbl{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.mc-num{font-family:var(--mono);font-size:44px;font-weight:600;line-height:1;transition:color .3s}
+.mc-unit{font-size:15px;color:var(--muted);margin-left:4px;font-family:var(--font)}
+.mc-sub{font-size:12px;margin-top:8px;font-weight:600;transition:color .3s}
+.mc-note{font-size:12px;color:var(--muted);line-height:1.65;margin-top:6px}
+.mc-note strong{color:var(--text)}
+
+/* ── Chart card ─────────────────────────────────── */
+.chart-card{background:var(--white);border:1px solid var(--border);padding:24px 28px;margin-bottom:4px}
+.chart-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px}
+.chart-legend{display:flex;gap:18px;flex-wrap:wrap}
+.cl{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)}
+.cl-sq{width:10px;height:10px;flex-shrink:0}
+.chart-note{font-size:11px;color:var(--muted);font-style:italic}
+
+/* ── Result pill ──────────────────────────────────── */
+.result-pill{display:inline-flex;align-items:center;gap:8px;background:var(--faint);border:1px solid var(--border);padding:6px 14px;font-size:13px;margin-bottom:28px}
+.rp-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;transition:background .3s}
+.rp-text{color:var(--muted)}
+.rp-text strong{color:var(--text)}
+
+/* ── Dark parameter section ───────────────────────── */
+.params-section{background:var(--param-bg);padding:28px 40px 32px;margin-top:0}
+.params-section-inner{max-width:1120px;margin:0 auto}
+.params-header{display:flex;align-items:baseline;gap:12px;margin-bottom:20px}
+.params-title{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--param-muted)}
+.params-hint{font-size:11px;color:rgba(255,255,255,.25)}
+.params-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:20px}
+.pc{background:var(--param-s);border:1px solid var(--param-border);padding:16px 18px}
+.pc-num{font-size:10px;font-weight:600;letter-spacing:.5px;color:rgba(255,255,255,.3);margin-bottom:4px}
+.pc-name{font-size:13px;font-weight:600;color:var(--param-text);margin-bottom:12px;line-height:1.3}
+.seg{display:flex;flex-direction:column;gap:6px}
+.sb{padding:7px 12px;font-size:12px;font-weight:500;font-family:var(--font);cursor:pointer;background:transparent;border:1px solid rgba(255,255,255,.18);color:var(--param-muted);transition:all .15s;text-align:left;border-radius:0}
+.sb:hover:not(.on){background:rgba(255,255,255,.07);color:var(--param-text)}
+.sb.on{background:var(--red);border-color:var(--red);color:#fff;font-weight:600}
+.pc-note{font-size:11px;color:rgba(255,255,255,.3);margin-top:10px;line-height:1.5}
+
+/* ── Summary + footer ─────────────────────────────── */
+.summary-bar{max-width:1120px;margin:0 auto;background:var(--param-s);border:1px solid var(--param-border);border-top:none;padding:14px 22px;display:flex;align-items:flex-start;gap:10px}
+.sb-line{width:2px;background:var(--red);align-self:stretch;flex-shrink:0;border-radius:1px;transition:background .3s}
+.sb-text{font-size:13px;color:var(--param-muted);line-height:1.6}
+.sb-text strong{color:var(--param-text);font-weight:600}
+
+.footer-section{background:var(--param-bg);padding:20px 40px 32px}
+.footer-inner{max-width:1120px;margin:0 auto;border-top:1px solid var(--param-border);padding-top:16px;font-size:11px;color:rgba(255,255,255,.3);line-height:1.8}
+.footer-inner strong{color:rgba(255,255,255,.5)}
+</style>
+</head>
+<body>
+
+<!-- Site header -->
+<header class="site-header">
+  <div class="brand">
+    <div>
+      <div class="brand-logo">Parameteranalyse</div>
+    </div>
+  </div>
+</header>
+
+<!-- Page title -->
+<div class="page-title-bar">
+  <div class="page-eyebrow">Basierend auf den publizierten Daten vom 24 Oktober 2025</div>
+  <h1 class="page-title">Einfluss von Gebäudesektor-Massnahmen auf die <em>Winterstromlücke</em> in 2050</h1>
+</div>
+
+<main>
+
+  <!-- Study card -->
+  <div class="study-card">
+    <div class="study-badge">Studienbasis</div>
+    <p class="study-text">
+      <strong>Kelevitz K., Haller M., Frommelt M., Meier B.</strong> —
+      <em>Influence of Scenarios for Space Heating and Domestic Hot Water in Buildings on the Winter Electricity Demand of Switzerland in 2050.</em>
+      Institut für Solartechnik SPF, Ostschweizer Fachhochschule OST, Rapperswil. <em>Energies</em> 2025, 18, 5601. DOI: 10.3390/en18215601.<br><br>
+      Die Studie erweitert das Energiesystem-Werkzeug <strong>PowerCheck</strong> (https://powercheck.ch) um ein Bottom-up-Modell des Schweizer Gebäudeparks (60 Kategorien, stündliche Auflösung, GWR-Datenbasis). Zwölf Szenarien variieren vier Parameter und quantifizieren deren Einfluss auf die saisonale Stromlücke. Grundlage bilden die <strong>Energieperspektiven 2050+</strong> des Bundesamts für Energie (BFE).
+    </p>
+  </div>
+
+  <!-- Metrics -->
+  <div class="slbl" style="margin-bottom:10px">Simulationsergebnis</div>
+  <div class="metrics">
+    <div class="mc">
+      <div class="mc-lbl">Winterstromlücke 2050</div>
+      <div><span id="vG" class="mc-num" style="color:var(--orange)">10.7</span><span class="mc-unit">TWh</span></div>
+      <div id="vP" class="mc-sub" style="color:var(--orange)">Basis EP2050+</div>
+    </div>
+    <div class="mc">
+      <div class="mc-lbl">Differenz vs. EP2050+ Basis</div>
+      <div><span id="vD" class="mc-num" style="font-size:36px;color:var(--muted)">±0.0</span><span class="mc-unit">TWh</span></div>
+      <div id="vDp" class="mc-sub" style="color:var(--muted)">0 %</div>
+    </div>
+    <div class="mc">
+      <div class="mc-lbl">Einordnung</div>
+      <p class="mc-note">Aktuelle CH-Energieimporte (Öl, Gas, Benzin, Uran): ca. <strong>200 TWh/a</strong>. Die Lücke ist kein Neubedarf, sondern das verbleibende saisonale Residuum nach vollständiger Dekarbonisierung.</p>
+    </div>
+  </div>
+
+  <!-- Chart -->
+  <div class="slbl">Szenarien-Vergleich: Winterstromlücke 2050</div>
+  <div class="chart-card">
+    <div class="chart-top">
+      <div class="chart-legend">
+        <div class="cl"><div class="cl-sq" style="background:var(--red)"></div>Tiefe Sanierung (0.5 %/a) · 13.9 TWh</div>
+        <div class="cl"><div class="cl-sq" style="background:var(--orange)"></div>EP2050+ Basis (1.1 %/a) · 10.7 TWh</div>
+        <div class="cl"><div class="cl-sq" style="background:var(--gold)"></div>BFE-Schätzung · 9.0 TWh</div>
+        <div class="cl"><div class="cl-sq" style="background:var(--green)"></div>Optimum (2.0 %/a) · 6.0 TWh</div>
+        <div class="cl"><div class="cl-sq" style="border:2px solid var(--blue);background:transparent"></div>Aktuelle Auswahl</div>
+      </div>
+      <div class="chart-note">Quelle: Kelevitz et al. 2025, Fig. 8 + eigene Kombinations-Näherung</div>
+    </div>
+    <div style="position:relative;width:100%;height:230px">
+      <canvas id="gc" role="img" aria-label="Balkendiagramm Winterstromlücke 2050: 13.9 TWh tiefe Sanierung bis 6.0 TWh Optimum">Tiefe Sanierung 13.9 TWh, EP2050+ Basis 10.7 TWh, BFE 9.0 TWh, Optimum 6.0 TWh.</canvas>
+    </div>
+  </div>
+
+  <!-- Result pill -->
+  <div class="result-pill" id="resultPill">
+    <div class="rp-dot" id="rpDot" style="background:var(--orange)"></div>
+    <div class="rp-text" id="rpText">Alle Parameter auf EP2050+ Basis · Simulierter Fehlbetrag: <strong>10.7 TWh</strong></div>
+  </div>
+
+</main>
+
+<!-- Dark parameter section -->
+<div class="params-section">
+  <div class="params-section-inner">
+    <div class="params-header">
+      <div class="params-title">Parameter anpassen</div>
+      <div class="params-hint">✦ = EP2050+ Basis-Szenario (BFE)</div>
+    </div>
+    <div class="params-grid">
+
+      <div class="pc">
+        <div class="pc-num">01 /</div>
+        <div class="pc-name">Sanierungsrate Gebäudehülle / Jahr</div>
+        <div class="seg">
+          <button class="sb" onclick="sp('r',0,this)">0.5 % — aktuelle Realrate</button>
+          <button class="sb on" onclick="sp('r',1,this)">1.1 % — EP2050+ ✦</button>
+          <button class="sb" onclick="sp('r',2,this)">1.5 % — erhöhtes Ziel</button>
+          <button class="sb" onclick="sp('r',3,this)">2.0 % — Optimalszenario</button>
+        </div>
+        <div id="en-r" class="pc-note">Stärkster Einzelhebel. Wirkt nur bei frühem und konsequentem Beginn. Aktuelle Realrate liegt bei ca. 0.5 %/a.</div>
+      </div>
+
+      <div class="pc">
+        <div class="pc-num">02 /</div>
+        <div class="pc-name">Warmwasser-Wärmerückgewinnung</div>
+        <div class="seg">
+          <button class="sb on" onclick="sp('h',0,this)">0 % — kein Recovery ✦</button>
+          <button class="sb" onclick="sp('h',1,this)">20 % — moderat</button>
+          <button class="sb" onclick="sp('h',2,this)">50 % — hoch</button>
+        </div>
+        <div id="en-h" class="pc-note">Moderater Einzeleffekt; wirkt ganzjährig gleichmässig. Entfaltet stärkere Wirkung in Kombination mit anderen Massnahmen.</div>
+      </div>
+
+      <div class="pc">
+        <div class="pc-num">03 /</div>
+        <div class="pc-name">Anteil Erdsonden-Wärmepumpen</div>
+        <div class="seg">
+          <button class="sb on" onclick="sp('g',0,this)">20 % — aktueller Trend ✦</button>
+          <button class="sb" onclick="sp('g',1,this)">50 % — erhöht</button>
+          <button class="sb" onclick="sp('g',2,this)">80 % — maximal</button>
+        </div>
+        <div id="en-g" class="pc-note">SCOP EFH: 3.75 (Erdsonde) vs. 3.03 (Luft). Kein Entfrostungsverlust. Geologische und wirtschaftliche Grenzen begrenzen Ausbau.</div>
+      </div>
+
+      <div class="pc">
+        <div class="pc-num">04 /</div>
+        <div class="pc-name">Angenommene Klimaerwärmung</div>
+        <div class="seg">
+          <button class="sb on" onclick="sp('c',0,this)">+0 °C — konservativ ✦</button>
+          <button class="sb" onclick="sp('c',1,this)">+1 °C — moderat</button>
+          <button class="sb" onclick="sp('c',2,this)">+2 °C — RCP4.5-nah</button>
+          <button class="sb" onclick="sp('c',3,this)">+3 °C — RCP8.5-nah</button>
+        </div>
+        <div id="en-c" class="pc-note">Senkt Heizwärmebedarf sichtbar, kann Hüllensanierung nicht ersetzen. Kühlbedarf Sommer (nicht modelliert) steigt parallel.</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Summary inside dark section -->
+<div class="params-section" style="padding-top:0">
+  <div class="params-section-inner">
+    <div class="summary-bar">
+      <div class="sb-line" id="sbl"></div>
+      <div class="sb-text" id="sbt">Alle Parameter auf EP2050+ Basis gesetzt. Simulierter Winterstrom-Fehlbetrag: <strong>10.7 TWh</strong>.</div>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer-section">
+  <div class="footer-inner">
+    <strong>Quelle:</strong> Kelevitz K., Haller M., Frommelt M., Meier B. — <em>Influence of Scenarios for Space Heating and Domestic Hot Water in Buildings on the Winter Electricity Demand of Switzerland in 2050.</em> Energies 2025, 18, 5601. DOI: 10.3390/en18215601 &nbsp;|&nbsp;
+    <strong>Modell:</strong> PowerCheck, Institut für Solartechnik SPF, OST Rapperswil &nbsp;|&nbsp;
+    <strong>Basisdaten:</strong> GWR (BFS), EP2050+ (BFE) &nbsp;|&nbsp;
+    <strong>Hinweis:</strong> Kombinationseffekte sind additive Näherungen auf Basis der publizierten Einzelszenarien. Abweichungen von Kombinationsszenarien ≤ 5 % möglich.
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const B = 10.7;
+const DV = { r:[3.2,0,-2.14,-4.7], h:[0,-0.1,-0.25], g:[0,-0.15,-0.30], c:[0,-0.25,-0.45,-0.65] };
+let ps = { r:1, h:0, g:0, c:0 };
+
+const notes = {
+  r:['Kritisch: Lücke steigt auf 13.9 TWh (+30 %). Kein anderer Parameter kann dies kompensieren. Sofortiger Handlungsbedarf.','Stärkster Einzelhebel; wirkt nur bei frühem und konsequentem Beginn. Aktuelle Realrate liegt bei ca. 0.5 %/a — unter dem EP2050+ Ziel.','Lücke sinkt um 20 % auf 8.6 TWh. Entspricht der gleichzeitigen Aktivierung mehrerer anderer Massnahmen.','Lücke sinkt um 44 % auf 6.0 TWh. Erfordert Sanierung von 85 % des Gebäudebestands bis 2050.'],
+  h:['Kein Einzeleffekt (EP2050+ Basis). Wirkt in Kombination mit anderen Massnahmen stärker.','Moderater Einzeleffekt; wirkt ganzjährig gleichmässig. 20 % Erschliessung ist technisch erreichbar.','50 % WW-WRG: maximales Potenzial; technisch und wirtschaftlich anspruchsvoll.'],
+  g:['Basis: 80 % Luft-WP, 20 % Erdsonden — entspricht aktuellem Trend.','SCOP EFH: 3.75 (Erdsonde) vs. 3.03 (Luft). Kein Entfrostungsverlust. Geologische und wirtschaftliche Grenzen begrenzen Ausbau.','80 % Erdsonden: maximales technisches Potenzial; geografisch und wirtschaftlich kaum erreichbar.'],
+  c:['Keine Erwärmung angenommen — konservative Auslegung.','Leichte Senkung Heizwärmebedarf; entspricht realistischem Nahszenario.','Moderate Senkung; BFE/IPCC RCP4.5-nah. Kühlbedarf Sommer steigt (nicht modelliert).','Maximaler Klimaeffekt (RCP8.5-nah); entlastet Winter, belastet Sommer erheblich (nicht modelliert).']
+};
+const scLbl = {
+  r:['Sanierung 0.5 %/a','Sanierung 1.1 %/a','Sanierung 1.5 %/a','Sanierung 2.0 %/a'],
+  h:['WW-WRG 0 %','WW-WRG 20 %','WW-WRG 50 %'],
+  g:['Erdsonden-WP 20 %','Erdsonden-WP 50 %','Erdsonden-WP 80 %'],
+  c:['Klima +0 °C','Klima +1 °C','Klima +2 °C','Klima +3 °C']
+};
+const dflt = {r:1,h:0,g:0,c:0};
+
+function gap(){return Math.max(B+DV.r[ps.r]+DV.h[ps.h]+DV.g[ps.g]+DV.c[ps.c],0.5)}
+function col(v){return v>12?'#E8332A':v>10.5?'#D96018':v>8?'#B08800':'#2d7a4a'}
+
+function sp(k,i,btn){
+  ps[k]=i;
+  btn.parentElement.querySelectorAll('.sb').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('en-'+k).textContent=notes[k][i];
+  rn();
+}
+
+function rn(){
+  const g=gap(),d=g-B,pct=d/B*100,c=col(g);
+  const gE=document.getElementById('vG'); gE.textContent=g.toFixed(1); gE.style.color=c;
+  const dE=document.getElementById('vD'); dE.textContent=(d>=0?'+':'')+d.toFixed(1);
+  dE.style.color=d>0.05?'#E8332A':d<-0.05?'#2d7a4a':'#5c5c5c';
+  const dpE=document.getElementById('vDp'); dpE.textContent=(pct>=0?'+':'')+pct.toFixed(0)+' %';
+  dpE.style.color=d>0.05?'#E8332A':d<-0.05?'#2d7a4a':'#5c5c5c';
+  const pE=document.getElementById('vP');
+  if(Math.abs(pct)<0.5){pE.textContent='Basis EP2050+';pE.style.color='#D96018';}
+  else{pE.textContent=(pct>=0?'+':'')+pct.toFixed(0)+' % vs. EP2050+ Basis';pE.style.color=c;}
+
+  ch.data.datasets[0].data[4]=g;
+  ch.data.datasets[0].backgroundColor[4]='#1A5BA618';
+  ch.data.datasets[0].borderColor[4]='#1A5BA6';
+  ch.update('active');
+
+  document.getElementById('rpDot').style.background=c;
+  document.getElementById('sbl').style.background=c;
+
+  const diffs=Object.keys(ps).filter(k=>ps[k]!==dflt[k]);
+  const stE=document.getElementById('sbt');
+  const rpE=document.getElementById('rpText');
+  if(diffs.length===0){
+    stE.innerHTML='Alle Parameter auf EP2050+ Basis. Simulierter Winterstrom-Fehlbetrag: <strong>'+g.toFixed(1)+' TWh</strong>.';
+    rpE.innerHTML='Alle Parameter auf EP2050+ Basis · Fehlbetrag: <strong>'+g.toFixed(1)+' TWh</strong>';
+  } else {
+    const parts=Object.keys(ps).map(k=>scLbl[k][ps[k]]).join(' · ');
+    const dir=d>0.05?'erhöht sich':'reduziert sich';
+    stE.innerHTML=parts+' — Winterstromlücke <strong>'+dir+' auf '+g.toFixed(1)+' TWh</strong> ('+(pct>=0?'+':'')+pct.toFixed(0)+' % vs. EP2050+ Basis).';
+    rpE.innerHTML=parts+' · Fehlbetrag: <strong>'+g.toFixed(1)+' TWh</strong> ('+(pct>=0?'+':'')+pct.toFixed(0)+' %)';
+  }
+}
+
+const ch=new Chart(document.getElementById('gc'),{
+  type:'bar',
+  data:{
+    labels:['Tiefe Sanierung (0.5 %/a)','EP2050+ Basis (1.1 %/a)','BFE-Schätzung EP2050+','Optimum Sanierung (2.0 %/a)','Aktuelle Auswahl ▶'],
+    datasets:[{
+      data:[13.9,10.7,9.0,6.0,B],
+      backgroundColor:['#E8332A18','#D9601818','#B0880018','#2d7a4a18','#1A5BA618'],
+      borderColor:    ['#E8332A',  '#D96018',  '#B08800',  '#2d7a4a',  '#1A5BA6'],
+      borderWidth:[1,1,1,1,2],
+      borderRadius:1,
+      borderSkipped:false
+    }]
+  },
+  options:{
+    indexAxis:'y',responsive:true,maintainAspectRatio:false,
+    animation:{duration:280},
+    plugins:{
+      legend:{display:false},
+      tooltip:{
+        backgroundColor:'#16213a',borderColor:'rgba(255,255,255,0.12)',borderWidth:1,
+        titleColor:'#e8f0fa',bodyColor:'#7a96bc',
+        callbacks:{label:ctx=>'  '+ctx.parsed.x.toFixed(1)+' TWh'}
+      }
+    },
+    scales:{
+      x:{min:0,max:16,grid:{color:'rgba(0,0,0,0.06)'},border:{display:false},
+         ticks:{color:'#aaa',font:{family:'IBM Plex Mono',size:11},callback:v=>v+' TWh',stepSize:2}},
+      y:{grid:{display:false},border:{display:false},
+         ticks:{color:'#555',font:{family:'DM Sans',size:12}}}
+    }
+  }
+});
+</script>
+</body>
+</html>
