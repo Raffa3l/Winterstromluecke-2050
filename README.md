@@ -28,15 +28,19 @@ Die Studie erweitert das Energiesystem-Werkzeug **PowerCheck** (https://powerche
 
 ## Funktionen
 
-- **Vier interaktive Parameter** mit je 3–4 Stufen:
-  1. Sanierungsrate Gebäudehülle / Jahr (0.5 % / 1.1 % / 1.5 % / 2.0 %)
-  2. Warmwasser-Wärmerückgewinnung (0 % / 20 % / 50 %)
-  3. Anteil Erdsonden-Wärmepumpen (20 % / 50 % / 80 %)
-  4. Angenommene Klimaerwärmung (+0 °C / +1 °C / +2 °C / +3 °C)
-- **Echtzeit-Berechnung** der Winterstromlücke in TWh
-- **Szenarien-Vergleichsdiagramm** (Chart.js) mit Referenzwerten aus der Studie
-- **Dynamische Zusammenfassung** der aktiven Parameter
-- **Keine Abhängigkeiten** ausser Chart.js (CDN); keine Build-Pipeline erforderlich
+- **Vier Hebel** in den Stufen der Studie:
+  1. Sanierungsrate Gebäudehülle (0.5 / 1.1 / 1.5 / 2.0 %/a)
+  2. Wärmerückgewinnung Warmwasser (0 / 20 / 50 %)
+  3. Anteil Erdsonden-Wärmepumpen (20 / 50 / 80 %)
+  4. Erwärmung gegenüber Referenzwetter (+0 / +1 / +2 / +3 K)
+- **Kennzahlen:** Winterstromlücke, Strom für Heizung und Warmwasser (Jahr und Januar), Wärmebedarf. Jede Zahl ist als *Studienwert* oder *Modellschätzung* gekennzeichnet.
+- **Alle 13 Studienszenarien** im Vergleich; ein Klick lädt das Szenario.
+- **Beitrag je Hebel** als Wasserfall, mit dem «Winterhebel» je Massnahme.
+- **Wochenbilanz 2050** (Fig. 5): woher die Lücke kommt.
+- **Leistungszahl der Wärmepumpe** nach den Gleichungen von Anhang D, umschaltbar nach Vorlauftemperatur.
+- **Nachweis:** Rechenweg mit den aktuellen Zahlen, Prüfung an den Kombinationsszenarien, Tabelle aller Werte, Download als CSV und JSON.
+- Hell- und Dunkelmodus, bedienbar mit Tastatur, ab 320 px Breite.
+- **Keine Abhängigkeiten** ausser der Schrift Noto Sans; Diagramme als eigenes SVG, kein Build-Schritt.
 
 ---
 
@@ -46,8 +50,8 @@ Die Studie erweitert das Energiesystem-Werkzeug **PowerCheck** (https://powerche
 
 ```bash
 # Repository klonen
-git clone https://github.com/USERNAME/Winterstromluecke-2050.git
-cd winterstromluecke-2050
+git clone https://github.com/Raffa3l/Winterstromluecke-2050.git
+cd Winterstromluecke-2050
 
 # index.html direkt im Browser öffnen – kein Server nötig
 open index.html          # macOS
@@ -62,44 +66,50 @@ start index.html         # Windows
 1. Repository auf GitHub erstellen (öffentlich oder privat mit Pages-Berechtigung)
 2. `index.html` im Root-Verzeichnis belassen
 3. GitHub → Settings → Pages → Source: **Deploy from branch** → `main` / `root`
-4. Die App ist danach unter `https://USERNAME.github.io/Winterstromluecke-2050` erreichbar
+4. Die App ist danach unter `https://raffa3l.github.io/Winterstromluecke-2050` erreichbar
 
 ---
 
-## Modellhinweise
+## Daten
 
-Die Winterstromlücke wird als additive Kombination der publizierten Einzelszenario-Werte berechnet:
+Die Studie veröffentlicht die Szenariowerte nur als Grafik. Sie wurden aus den eingebetteten Originalbildern pixelgenau ausgelesen und gegen die Gitterlinien kalibriert (Auflösung ≈ 0.01 TWh). Kontrollen gegen den Text: Basis 10.7 / 12.4 / 58.6 TWh, R 2 −44 %, R 1.5 −20 %, R 0.5 13.9 und 17 TWh, Com 1 −25 %; Summe der Defizitwochen in Fig. 5 10.65 statt 10.7 TWh.
 
-| Parameter | Stufe | Δ gegenüber Basis (TWh) |
-|-----------|-------|------------------------|
-| Sanierung | 0.5 %/a | +3.2 |
-| Sanierung | 1.1 %/a (Basis) | 0 |
-| Sanierung | 1.5 %/a | −2.14 |
-| Sanierung | 2.0 %/a | −4.70 |
-| WW-WRG | 20 % | −0.10 |
-| WW-WRG | 50 % | −0.25 |
-| Erdsonden-WP | 50 % | −0.15 |
-| Erdsonden-WP | 80 % | −0.30 |
-| Klima | +1 °C | −0.25 |
-| Klima | +2 °C | −0.45 |
-| Klima | +3 °C | −0.65 |
+| Code | Szenario | Lücke | Strom Jahr | Strom Januar | Wärme Jahr |
+|------|----------|------:|-----------:|-------------:|-----------:|
+| R 0.5 | Sanierung 0.5 %/a | 13.94 | 17.00 | 3.58 | – |
+| B | Basis EP2050+ (1.1 %/a, 0 %, 20 %, +0 K) | 10.70 | 12.42 | 2.70 | 58.60 |
+| R 1.5 | Sanierung 1.5 %/a | 8.57 | 9.40 | 2.11 | 47.58 |
+| R 2 | Sanierung 2.0 %/a | 5.98 | 5.68 | 1.39 | 33.78 |
+| HR 20 | Wärmerückgewinnung 20 % | 10.55 | 12.15 | 2.66 | 56.57 |
+| HR 50 | Wärmerückgewinnung 50 % | 10.33 | 11.76 | 2.61 | 53.59 |
+| GHP 50 | Erdsonden 50 % | 10.36 | 11.55 | 2.50 | 58.60 |
+| GHP 80 | Erdsonden 80 % | 10.03 | 10.68 | 2.30 | 58.60 |
+| CW 1 | Erwärmung +1 K | 10.35 | 11.31 | 2.52 | 54.81 |
+| CW 2 | Erwärmung +2 K | 10.04 | 10.27 | 2.36 | 51.14 |
+| CW 3 | Erwärmung +3 K | 9.75 | 9.30 | 2.19 | 47.62 |
+| Com 1 | 1.5 %/a, 20 %, 50 %, +2 K | 8.00 | 7.06 | 1.69 | 39.65 |
+| Com 2 | 2.0 %/a, 50 %, 80 %, +3 K | 5.89 | 3.23 | 0.91 | 22.93 |
 
-**Basis:** 10.7 TWh (PowerCheck-Simulation, EP2050+ Szenario, Kelevitz et al. 2025, Abschn. 3.1)
-
-Abweichungen gegenüber den in der Studie publizierten Kombinationsszenarien (Com1/Com2, Fig. 8) betragen aufgrund der additiven Näherung ≤ 5 %.
+Alle Werte in TWh. Quelle: Kelevitz et al. 2025, Fig. 6a, 7a, 7b, 8a, 8b, 9. Referenz EP2050+ (BFE): 9 TWh.
 
 ---
 
-## Referenzwerte im Diagramm
+## Modell für nicht simulierte Kombinationen
 
-| Szenario | Winterstromlücke 2050 |
-|----------|----------------------|
-| Tiefe Sanierung (0.5 %/a) | 13.9 TWh |
-| EP2050+ Basis (1.1 %/a) | 10.7 TWh |
-| BFE-Schätzung EP2050+ | 9.0 TWh |
-| Optimum Sanierung (2.0 %/a) | 6.0 TWh |
+Für die 13 simulierten Szenarien zeigt die App den Studienwert. Für die übrigen 131 der 144 Kombinationen schätzt sie in drei Schritten:
 
-Quelle für alle Werte: Kelevitz et al. 2025, Fig. 8 und Abschn. 3.1–3.2.
+1. **Strom- und Wärmebedarf multiplikativ:** `E = E_B · Π (E_i / E_B)`. Jede Massnahme wirkt auf den Bedarf, der nach den anderen übrig bleibt.
+2. **Aufteilung der Einsparung auf die Hebel** mit logarithmischer Zerlegung (LMDI): `ΔE_i = L(E, E_B) · ln(E_B / E_i)`.
+3. **Lücke:** `G = G_B − Σ k_i · ΔE_i` mit dem Winterhebel `k_i = (G_B − G_i) / (E_B − E_i)` aus dem Einzelszenario. Er ist je Massnahme über alle Stufen nahezu konstant: Sanierung 0.70, Wärmerückgewinnung 0.57, Erdsonden 0.39, Erwärmung 0.31.
+
+Prüfung an den Kombinationen, die nicht zur Kalibrierung verwendet wurden:
+
+| Szenario | Studie | dieses Modell | Summe der Einzeleffekte |
+|----------|-------:|--------------:|------------------------:|
+| Com 1 | 8.00 | 7.89 (−1.4 %) | 7.42 (−7.3 %) |
+| Com 2 | 5.89 | 5.61 (−4.8 %) | 3.98 (−32.5 %) |
+
+Die frühere Fassung addierte feste Deltas, die für Wärmerückgewinnung, Erdsonden und Erwärmung etwa halb so gross waren wie in Fig. 8b, und lag bei Com 2 um −18.5 % daneben.
 
 ---
 
@@ -107,12 +117,8 @@ Quelle für alle Werte: Kelevitz et al. 2025, Fig. 8 und Abschn. 3.1–3.2.
 
 | Komponente | Beschreibung |
 |-----------|-------------|
-| `index.html` | Einzel-Datei-Anwendung, kein Build-Schritt |
-| [Chart.js 4.4.1](https://www.chartjs.org) | Balkendiagramm (CDN) |
-| [DM Sans](https://fonts.google.com/specimen/DM+Sans) | Schriftart (Google Fonts CDN) |
-| [IBM Plex Mono](https://fonts.google.com/specimen/IBM+Plex+Mono) | Zahlendarstellung (Google Fonts CDN) |
-
-Die Anwendung funktioniert vollständig offline, sobald die Schriften und Chart.js einmalig geladen wurden (Browser-Cache).
+| `index.html` | Einzeldatei, kein Build-Schritt; Diagramme als SVG ohne Bibliothek |
+| [Noto Sans](https://fonts.google.com/noto/specimen/Noto+Sans) | Schrift (Google Fonts); Rückfall auf die Systemschrift |
 
 ---
 

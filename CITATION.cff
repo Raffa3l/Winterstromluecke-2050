@@ -4,7 +4,7 @@ type: software
 title: "Winterstromluecke Schweiz 2050 - Interaktive Parameteranalyse"
 abstract: "Interactive web visualization of Kelevitz et al. (Energies 2025, 18, 5601). Shows the influence of four building-sector parameters on Switzerland's projected winter electricity gap in 2050."
 license: MIT
-repository-code: "https://github.com/USERNAME/winterstromluecke-2050"
+repository-code: "https://github.com/Raffa3l/Winterstromluecke-2050"
 authors:
   - name: "Institut fuer Solartechnik SPF, Ostschweizer Fachhochschule OST"
 
