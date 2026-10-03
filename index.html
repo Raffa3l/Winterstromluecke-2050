@@ -614,7 +614,7 @@ function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<":
       k_i = (G_B − G_i) / (E_B − E_i) aus dem Einzelszenario auf die Lücke.
    Einzelszenarien gibt das Modell exakt wieder. Die beiden Kombinationen sind
    nicht zur Kalibrierung verwendet und dienen als Prüfung: Com 1 −1.4 %,
-   Com 2 −4.8 %. Die frühere additive Näherung lag bei Com 2 um −33 % daneben.
+   Com 2 −4.8 %. Die blosse Summe der Einzeleffekte läge bei Com 2 um −33 % daneben.
    ========================================================================== */
 function logMean(a, b) { return Math.abs(a - b) < 1e-12 ? a : (a - b) / (Math.log(a) - Math.log(b)); }
 function leverK(code) {
@@ -1125,10 +1125,6 @@ function renderTable() {
       `<td>${zahl(s.gap, 2)}</td><td>${vz((s.gap - BASE.gap) / BASE.gap * 100, 1)}${NB}%</td><td>${zahl(s.el, 2)}</td><td>${zahl(s.jan, 2)}</td><td>${s.heat === null ? "–" : zahl(s.heat, 2)}</td></tr>`;
   }).join("");
 }
-function additivAlt(sel) {
-  // Frühere Fassung dieser Seite: Summe fester Deltas
-  return 10.7 + [3.2, 0, -2.14, -4.7][sel[0]] + [0, -0.1, -0.25][sel[1]] + [0, -0.15, -0.30][sel[2]] + [0, -0.25, -0.45, -0.65][sel[3]];
-}
 function renderProof() {
   const r = result;
   const rowsHebel = HEBEL.map((h, i) => {
@@ -1140,11 +1136,10 @@ function renderProof() {
     const s = BY[c];
     // Modellwert ohne Rückgriff auf den Studienwert
     const m = rechne(s.sel).gapModel;
-    const a = additivAlt(s.sel);
     let addNeu = BASE.gap;
     s.sel.forEach((lv, i) => { const cc = HEBEL[i].stufen[lv].code; if (cc !== "B") addNeu -= BASE.gap - BY[cc].gap; });
     const p = v => `${zahl(v, 2)} <span class="small">(${vz((v / s.gap - 1) * 100, 1)}${NB}%)</span>`;
-    return `<tr><td class="l">${esc(s.name)}</td><td>${zahl(s.gap, 2)}</td><td>${p(m)}</td><td>${p(addNeu)}</td><td>${p(a)}</td></tr>`;
+    return `<tr><td class="l">${esc(s.name)}</td><td>${zahl(s.gap, 2)}</td><td>${p(m)}</td><td>${p(addNeu)}</td></tr>`;
   }).join("");
 
   document.getElementById("proof").innerHTML = `
@@ -1170,10 +1165,9 @@ function renderProof() {
     <h3>Prüfung an den Kombinationen</h3>
     <p>Die beiden Kombinationsszenarien sind nicht in die Kalibrierung eingegangen.</p>
     <div class="scroll"><table>
-      <thead><tr><th class="l">Szenario</th><th>Studie</th><th>dieses Modell</th><th>Summe der Einzeleffekte</th><th>frühere Fassung</th></tr></thead>
+      <thead><tr><th class="l">Szenario</th><th>Studie</th><th>dieses Modell</th><th>Summe der Einzeleffekte</th></tr></thead>
       <tbody>${val}</tbody>
     </table></div>
-    <p class="small">Die frühere Fassung dieser Seite addierte feste Deltas. Für Wärmerückgewinnung, Erdsonden und Erwärmung waren diese etwa halb so gross wie in Fig. 8b. Dass sie Com 1 trotzdem traf, war Zufall: Zu kleine Einzeleffekte und fehlende Wechselwirkung glichen sich aus.</p>
 
     <h3>Datenherkunft</h3>
     <ul>

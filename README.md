@@ -109,8 +109,6 @@ Prüfung an den Kombinationen, die nicht zur Kalibrierung verwendet wurden:
 | Com 1 | 8.00 | 7.89 (−1.4 %) | 7.42 (−7.3 %) |
 | Com 2 | 5.89 | 5.61 (−4.8 %) | 3.98 (−32.5 %) |
 
-Die frühere Fassung addierte feste Deltas, die für Wärmerückgewinnung, Erdsonden und Erwärmung etwa halb so gross waren wie in Fig. 8b, und lag bei Com 2 um −18.5 % daneben.
-
 ---
 
 ## Technologie
