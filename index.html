@@ -5,512 +5,841 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Winterstromlücke 2050</title>
 <meta name="description" content="Wie Massnahmen im Schweizer Gebäudepark die Winterstromlücke 2050 verändern. Interaktive Auswertung von Kelevitz et al., Energies 2025, 18, 5601, mit allen Studienwerten, Rechenweg und Daten zum Herunterladen.">
+<meta name="theme-color" content="#ffffff">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230f7377'/%3E%3Cpath d='M19 5l-8 22' stroke='%23fff' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
   color-scheme: light;
-  --plane:        #f0f4f7;
-  --surface:      #ffffff;
-  --surface-soft: #f6f8fa;
-  --ink:          #1f2937;
-  --ink-2:        #46596b;
-  --ink-3:        #596978;
-  --grid:         #e3e8ed;
-  --axis:         #acb4bd;
-  --border:       #d9dee4;
-  --head:         #2f4356;
-  --head-sub:     #dfe4e9;
-  --accent:       #d8232a;
-  --on:           #2f4356;
-  --on-ink:       #ffffff;
-  --series-1:     #2a78d6;
-  --series-2:     #008300;
-  --serious:      #ec835a;
-  --neutral:      #828e9a;
-  --neutral-soft: #c9d0d7;
-  --shadow:       0 4px 14px rgba(28, 40, 52, 0.14);
-  --radius: 4px;
-  --font: "Noto Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --bg: #ffffff;
+  --bg-soft: #f2f5f5;
+  --bg-softer: #f8fafa;
+  --surface: #ffffff;
+  --text: #1f2937;
+  --muted: #4b5563;
+  --faint: #646c78;
+  --line: #d1d5db;
+  --line-soft: #e5e7eb;
+  --line-strong: #9ca3af;
+  /* Leitfarbe Petrol für Navigation, Fokus und Auswahl; --on für gewählte Segmente */
+  --accent: #0f7377;
+  --accent-soft: #e5f1f0;
+  --link: #0b6a6e;
+  --ctl-ink: #1e3a40;
+  --ctl-hover: #eaf3f2;
+  --on: #1e3a40;
+  --on-ink: #ffffff;
+  --nav-bg: rgb(255 255 255 / 92%);
+  --footer-bottom: #e8eded;
+  --tip-bg: #1e3a40;
+  --tip-ink: #ffffff;
+  --tip-muted: #d1d5db;
+  /* Datenfarben: Rot belastet den Winter (Defizit, grössere Lücke), Blau entlastet ihn */
+  --warm: #c8202a;
+  --warm-soft: #fbe5e6;
+  --cool: #1c63a6;
+  --cool-soft: #e3edf7;
+  --d-ink: #1e3a40;
+  --d-sel: #0f7377;
+  --d-neutral: #8a9699;
+  --d-surplus: #c3d6ea;
+  --ref-area: #f3f4f6;
+  --ok: #1e6b35;
+  --ok-soft: #e7f3ea;
+  --warn: #6b4a00;
+  --warn-soft: #fdf3dc;
+
+  --font: "Noto Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
   --mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+  --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 24px; --s6: 32px; --s7: 48px; --s8: 64px;
+  --r: 6px;
+  --r-lg: 10px;
+  --shadow-sm: 0 1px 2px rgb(16 32 36 / 5%), 0 1px 4px rgb(16 32 36 / 5%);
+  --shadow: 0 8px 24px rgb(16 32 36 / 12%);
+  --maxw: 1392px;
+  --t: 140ms ease;
 }
+/* Dunkelmodus: dieselben Rollen, aus Petrol abgeleitet */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
-    --plane: #10161c; --surface: #18212a; --surface-soft: #1f2a35;
-    --ink: #f3f5f7; --ink-2: #c4ccd4; --ink-3: #97a3af;
-    --grid: #26313c; --axis: #46596b; --border: rgba(255, 255, 255, 0.10);
-    --head: #1c2834; --head-sub: #acb4bd;
-    --on: #dfe4e9; --on-ink: #1c2834;
-    --series-1: #3987e5; --neutral: #6b7a89; --neutral-soft: #3a4754;
-    --shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+    --bg: #111a1c; --bg-soft: #162124; --bg-softer: #192528; --surface: #1a2629;
+    --text: #e6ecec; --muted: #b3bfc1; --faint: #96a4a7;
+    --line: #3a4a4f; --line-soft: #2a373b; --line-strong: #637479;
+    --accent: #4fbab5; --accent-soft: #183235; --link: #6fcac4;
+    --ctl-ink: #dbe7e6; --ctl-hover: #1f3134; --on: #cfe3e1; --on-ink: #10201f;
+    --nav-bg: rgb(17 26 28 / 92%); --footer-bottom: #0e1517;
+    --tip-bg: #0a1213; --tip-ink: #e6ecec; --tip-muted: #96a4a7;
+    --warm: #f0686d; --warm-soft: #3f2225; --cool: #6aa6e6; --cool-soft: #1c3046;
+    --d-ink: #d6e4e3; --d-sel: #4fbab5; --d-neutral: #6f8084; --d-surplus: #2c4560; --ref-area: #1f2b2e;
+    --ok: #7fd39a; --ok-soft: #1b3524; --warn: #f0c060; --warn-soft: #3a2f14;
+    --shadow-sm: 0 1px 2px rgb(0 0 0 / 30%); --shadow: 0 8px 24px rgb(0 0 0 / 50%);
   }
 }
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --plane: #10161c; --surface: #18212a; --surface-soft: #1f2a35;
-  --ink: #f3f5f7; --ink-2: #c4ccd4; --ink-3: #97a3af;
-  --grid: #26313c; --axis: #46596b; --border: rgba(255, 255, 255, 0.10);
-  --head: #1c2834; --head-sub: #acb4bd;
-  --on: #dfe4e9; --on-ink: #1c2834;
-  --series-1: #3987e5; --neutral: #6b7a89; --neutral-soft: #3a4754;
-  --shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+  --bg: #111a1c; --bg-soft: #162124; --bg-softer: #192528; --surface: #1a2629;
+  --text: #e6ecec; --muted: #b3bfc1; --faint: #96a4a7;
+  --line: #3a4a4f; --line-soft: #2a373b; --line-strong: #637479;
+  --accent: #4fbab5; --accent-soft: #183235; --link: #6fcac4;
+  --ctl-ink: #dbe7e6; --ctl-hover: #1f3134; --on: #cfe3e1; --on-ink: #10201f;
+  --nav-bg: rgb(17 26 28 / 92%); --footer-bottom: #0e1517;
+  --tip-bg: #0a1213; --tip-ink: #e6ecec; --tip-muted: #96a4a7;
+  --warm: #f0686d; --warm-soft: #3f2225; --cool: #6aa6e6; --cool-soft: #1c3046;
+  --d-ink: #d6e4e3; --d-sel: #4fbab5; --d-neutral: #6f8084; --d-surplus: #2c4560; --ref-area: #1f2b2e;
+  --ok: #7fd39a; --ok-soft: #1b3524; --warn: #f0c060; --warn-soft: #3a2f14;
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 30%); --shadow: 0 8px 24px rgb(0 0 0 / 50%);
 }
 
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
-html { -webkit-text-size-adjust: 100%; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
 body {
   margin: 0;
-  background: var(--plane);
-  color: var(--ink);
+  background: var(--bg);
+  color: var(--text);
   font-family: var(--font);
-  font-size: 15px;
+  font-size: 16px;
   line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
 }
-a { color: var(--series-1); }
-:where(a, button, summary, input, [tabindex]):focus-visible {
-  outline: 2px solid var(--series-1);
-  outline-offset: 2px;
-}
+h1, h2, h3 { margin: 0; font-weight: 700; line-height: 1.2; color: var(--text); }
+h1 { font-size: 38px; line-height: 1.15; letter-spacing: -0.02em; }
+h2 { font-size: 22px; letter-spacing: -0.01em; }
+h3 { font-size: 17px; }
+p { margin: 0; }
+a { color: var(--link); }
+a:hover { color: var(--text); }
+button, input { font: inherit; color: inherit; }
+td, .num { font-variant-numeric: tabular-nums; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.skip-link { position: absolute; left: 8px; top: -48px; background: var(--on); color: var(--on-ink); padding: 8px 12px; border-radius: var(--r); z-index: 100; }
+.skip-link:focus { top: 8px; }
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { transition-duration: 0.01ms !important; }
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
 }
-.sr { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
-/* --- Kopfzeile --- */
-.app-header {
-  background: var(--head);
-  border-top: 3px solid var(--accent);
-  color: #fff;
-}
-.app-header .inner {
-  max-width: 1120px; margin: 0 auto; padding: 18px 16px 20px;
-  display: flex; gap: 16px; align-items: flex-start; justify-content: space-between;
-}
-.app-header h1 { margin: 0; font-size: clamp(1.35rem, 3.4vw, 1.75rem); font-weight: 600; letter-spacing: -0.01em; line-height: 1.25; }
-.app-header p { margin: 4px 0 0; color: var(--head-sub); font-size: 14px; max-width: 46rem; }
-.theme-toggle {
-  flex: none; font: inherit; font-size: 12px;
-  padding: 5px 12px; border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  background: transparent; color: #fff; cursor: pointer;
-}
-.theme-toggle:hover { background: rgba(255, 255, 255, 0.1); }
+/* ------------------------------------------------------------ Seitenrahmen */
+.wrap { width: 100%; max-width: calc(var(--maxw) + 96px); margin: 0 auto; padding: 0 48px; }
+.spacer { flex: 1; }
 
-.wrap { max-width: 1120px; margin: 0 auto; padding: 20px 16px 48px; }
+/* Metaleiste: hell, Herkunft des angezeigten Werts und Darstellung */
+.metabar { background: var(--bg-soft); border-bottom: 1px solid var(--line-soft); font-size: 14px; color: var(--muted); }
+.metabar .wrap { display: flex; align-items: center; gap: var(--s4); min-height: 44px; }
+.metabar .seg button { min-height: 30px; font-size: 13px; }
 
-/* --- Karten --- */
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 18px 20px;
-  margin-bottom: 16px;
+/* Kopfzeile: Anwendungsname und Datenzugang */
+.site-header { background: var(--bg); }
+.site-header .wrap { display: flex; align-items: center; gap: var(--s4); min-height: 92px; }
+.brand { display: flex; align-items: center; gap: var(--s4); text-decoration: none; color: var(--text); min-width: 0; }
+.brand:hover { color: var(--text); }
+.brand-mark { font-weight: 700; font-size: 15px; letter-spacing: 0.08em; line-height: 1.1; padding-right: var(--s4); border-right: 1px solid var(--line); white-space: nowrap; }
+.brand-mark .slash { color: var(--accent); }
+.brand-name { font-size: 17px; font-weight: 700; line-height: 1.35; }
+.brand-name small { display: block; font-size: 14px; font-weight: 400; color: var(--muted); }
+
+/* Hauptnavigation: Abschnitte der Seite, aktive Stelle mit Petrol-Unterstreichung */
+.main-nav {
+  position: sticky; top: 0; z-index: 25;
+  background: var(--nav-bg);
+  backdrop-filter: saturate(1.4) blur(10px); -webkit-backdrop-filter: saturate(1.4) blur(10px);
+  border-top: 1px solid var(--line-soft); border-bottom: 1px solid var(--line);
 }
-.card > h2, figcaption { font-size: 16px; font-weight: 600; margin: 0 0 2px; }
-.subcaption { font-size: 13px; color: var(--ink-2); margin: 0 0 14px; max-width: 52rem; }
-.eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 8px; }
-.lead { margin: 0; font-size: 15px; max-width: 54rem; }
-.lead + .lead { margin-top: 8px; }
-.source-line { margin: 12px 0 0; font-size: 13px; color: var(--ink-2); }
+.main-nav .wrap { display: flex; gap: var(--s5); overflow-x: auto; scrollbar-width: none; }
+.main-nav .wrap::-webkit-scrollbar { display: none; }
+.nav-item { position: relative; display: inline-flex; align-items: center; padding: 16px 2px; color: var(--muted); text-decoration: none; font-size: 17px; font-weight: 500; white-space: nowrap; transition: color var(--t); }
+.nav-item:hover { color: var(--text); }
+.nav-item[aria-current] { color: var(--accent); font-weight: 600; }
+.nav-item[aria-current]::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 3px; border-radius: 3px 3px 0 0; background: var(--accent); }
 
-/* --- Bedienung --- */
-.controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 18px 24px; }
-fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
-legend { padding: 0; font-size: 13px; font-weight: 600; margin-bottom: 8px; display: flex; gap: 8px; align-items: baseline; }
-legend .num { font-variant-numeric: tabular-nums; color: var(--ink-3); font-weight: 500; }
-.seg { display: grid; gap: 4px; }
-.seg input { position: absolute; opacity: 0; pointer-events: none; }
-.seg label {
-  display: flex; justify-content: space-between; align-items: baseline; gap: 8px;
-  padding: 7px 10px; min-height: 36px;
-  border: 1px solid var(--border); border-radius: var(--radius);
-  background: var(--surface); cursor: pointer; font-size: 14px;
-  transition: background 0.12s, border-color 0.12s, color 0.12s;
-}
-.seg label:hover { border-color: var(--axis); background: var(--surface-soft); }
-.seg .val { font-weight: 600; font-variant-numeric: tabular-nums; }
-.seg .tag { font-size: 12px; color: var(--ink-3); text-align: right; }
-.seg input:checked + label { background: var(--on); border-color: var(--on); color: var(--on-ink); }
-.seg input:checked + label .tag { color: inherit; opacity: 0.85; }
-.seg input:focus-visible + label { outline: 2px solid var(--series-1); outline-offset: 2px; }
-.note-param { font-size: 12.5px; color: var(--ink-2); margin: 8px 0 0; min-height: 3.2em; }
+.breadcrumb { font-size: 14px; color: var(--muted); padding-top: var(--s5); }
+.breadcrumb ol { display: flex; flex-wrap: wrap; gap: 4px 10px; list-style: none; margin: 0; padding: 0; }
+.breadcrumb li + li::before { content: "›"; margin-right: 10px; color: var(--faint); }
+.breadcrumb a { color: var(--muted); text-decoration: none; }
+.breadcrumb a:hover { text-decoration: underline; }
 
-.presets { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border); font-size: 13px; color: var(--ink-2); }
+.content { display: block; padding-top: var(--s6); padding-bottom: var(--s8); outline: none; }
+.anchor { scroll-margin-top: 72px; }
+
+/* Fusszeile: hell, drei Spalten */
+.site-footer { background: var(--bg-soft); border-top: 1px solid var(--line-soft); margin-top: var(--s7); }
+.site-footer .wrap { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s6); padding-top: var(--s7); padding-bottom: var(--s7); }
+.site-footer h2 { font-size: 18px; font-weight: 600; margin-bottom: var(--s4); }
+.site-footer p { font-size: 15px; line-height: 1.6; color: var(--muted); }
+.site-footer p + p { margin-top: var(--s3); }
+.footer-links { list-style: none; margin: 0; padding: 0; }
+.footer-links a { display: flex; justify-content: space-between; align-items: center; gap: var(--s3); padding: 11px 12px; border-bottom: 1px solid var(--line); color: var(--text); text-decoration: none; font-size: 15px; transition: background var(--t), color var(--t); }
+.footer-links a:hover { background: var(--surface); color: var(--accent); }
+.footer-links svg { width: 18px; height: 18px; flex: none; }
+.footer-bottom { background: var(--footer-bottom); font-size: 13px; color: var(--muted); }
+.footer-bottom .wrap { display: block; padding-top: var(--s4); padding-bottom: var(--s4); }
+
+/* ------------------------------------------------------------ Steuerelemente */
 .btn {
-  font: inherit; font-size: 13px;
-  padding: 5px 12px; border-radius: var(--radius);
-  border: 1px solid var(--axis); background: var(--surface); color: var(--ink);
-  cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--s2);
+  min-height: 40px; padding: 0 var(--s4);
+  border: 1px solid var(--line-strong); border-radius: var(--r);
+  background: var(--surface); color: var(--ctl-ink);
+  font-size: 15px; font-weight: 600; cursor: pointer; text-decoration: none; white-space: nowrap;
+  transition: background var(--t), color var(--t), border-color var(--t);
 }
-.btn:hover { border-color: var(--ink-3); background: var(--surface-soft); }
+.btn:hover { background: var(--ctl-hover); border-color: var(--ctl-ink); color: var(--ctl-ink); }
 .btn[aria-pressed="true"] { background: var(--on); border-color: var(--on); color: var(--on-ink); }
+.btn-sm { min-height: 32px; padding: 0 var(--s3); font-size: 14px; }
+.btn-ghost { border-color: transparent; background: transparent; color: var(--link); }
+.btn-ghost:hover { background: var(--bg-soft); border-color: transparent; color: var(--link); }
+.btn-ghost[aria-expanded="true"] { background: var(--accent-soft); }
+.btn svg { width: 18px; height: 18px; flex: none; }
 
-/* --- Kennzahlen --- */
-.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
-.tile { background: var(--surface); padding: 14px 16px 16px; }
-.tile-label { font-size: 13px; color: var(--ink-2); margin-bottom: 2px; }
-.tile-value { font-size: 30px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; }
-.tile.hero .tile-value { font-size: 48px; }
-.tile-unit { font-size: 14px; font-weight: 400; color: var(--ink-2); margin-left: 4px; letter-spacing: 0; }
-.tile-delta { font-size: 13px; margin-top: 4px; display: flex; align-items: center; gap: 6px; font-variant-numeric: tabular-nums; color: var(--ink-2); }
-.tile-delta .arrow { width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; flex: none; }
-.tile-delta .arrow.down { border-top: 7px solid var(--series-2); }
-.tile-delta .arrow.up { border-bottom: 7px solid var(--serious); }
-.tile-delta .arrow.flat { width: 10px; height: 2px; border: 0; background: var(--axis); }
-.tile-note { font-size: 12px; color: var(--ink-3); margin-top: 6px; }
-.badge { display: inline-block; font-size: 11px; font-weight: 600; letter-spacing: 0.02em; padding: 1px 7px; border-radius: 999px; border: 1px solid var(--border); color: var(--ink-2); background: var(--surface-soft); vertical-align: 2px; margin-left: 6px; }
-.badge.study { border-color: var(--series-1); color: var(--ink); }
-.summary { margin: 14px 0 0; font-size: 14px; color: var(--ink); max-width: 56rem; }
+.seg { display: inline-flex; border: 1px solid var(--line-strong); border-radius: var(--r); overflow: hidden; background: var(--surface); }
+.seg button { min-height: 36px; padding: 0 var(--s3); border: 0; border-right: 1px solid var(--line); background: transparent; font-size: 14px; font-weight: 500; cursor: pointer; color: var(--ctl-ink); }
+.seg button:last-child { border-right: 0; }
+.seg button:hover { background: var(--ctl-hover); }
+.seg button[aria-pressed="true"] { background: var(--on); color: var(--on-ink); }
 
-/* --- Diagramme --- */
-figure { margin: 0; }
-.chart-holder { position: relative; }
-.chart-holder svg { display: block; width: 100%; height: auto; overflow: visible; font-family: var(--font); }
-.ax text, .lbl { fill: var(--ink-3); font-size: 12px; font-variant-numeric: tabular-nums; }
-.lbl-2 { fill: var(--ink-2); font-size: 12.5px; }
-.lbl-1 { fill: var(--ink); font-size: 12.5px; }
-.lbl-strong { fill: var(--ink); font-size: 12.5px; font-weight: 600; }
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 2px 10px; border-radius: 999px; font-size: 13px; font-weight: 500; line-height: 22px; background: var(--bg-soft); color: var(--text); white-space: nowrap; }
+.chip-dot::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+.chip-study { color: var(--ok); background: var(--ok-soft); }
+.chip-model { color: var(--warn); background: var(--warn-soft); }
+.tag { display: inline-block; font-size: 12px; font-weight: 700; padding: 1px 8px; border-radius: 999px; background: var(--bg-soft); color: var(--text); white-space: nowrap; }
+.tag-study { background: var(--ok-soft); color: var(--ok); }
+.tag-model { background: var(--warn-soft); color: var(--warn); }
+
+/* Massnahmen: Stufen als Segmente, Radiofelder für Tastatur und Screenreader */
+.lever { border: 0; margin: 0; padding: var(--s4) 0 0; min-width: 0; border-top: 1px solid var(--line-soft); }
+.lever + .lever { margin-top: var(--s4); }
+.lever legend { float: left; width: 100%; padding: 0; margin-bottom: var(--s2); font-size: 15px; font-weight: 700; }
+.lever .seg { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); width: 100%; clear: both; }
+.lever input { position: absolute; opacity: 0; pointer-events: none; }
+.lever label {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  min-height: 48px; padding: 4px 6px; border-right: 1px solid var(--line);
+  cursor: pointer; color: var(--ctl-ink); text-align: center; line-height: 1.25;
+  transition: background var(--t), color var(--t);
+}
+.lever label:last-of-type { border-right: 0; }
+.lever label:hover { background: var(--ctl-hover); }
+.lever .val { font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.lever .lv-tag { font-size: 11.5px; color: var(--muted); white-space: nowrap; }
+.lever input:checked + label { background: var(--on); color: var(--on-ink); }
+.lever input:checked + label .lv-tag { color: inherit; opacity: 0.85; }
+.lever input:focus-visible + label { outline: 3px solid var(--accent); outline-offset: -3px; }
+.lever-note { font-size: 14px; color: var(--muted); margin-top: var(--s2); min-height: 3.1em; }
+.presets { margin-top: var(--s4); padding-top: var(--s4); border-top: 1px solid var(--line-soft); }
+.presets .row { display: flex; flex-wrap: wrap; gap: var(--s2); margin-top: var(--s2); }
+.field-label { font-size: 15px; font-weight: 700; }
+
+/* ------------------------------------------------------------ Seitenkopf */
+.eyebrow { font-size: 18px; color: var(--muted); margin-bottom: var(--s2); }
+.lead { font-size: 21px; font-weight: 700; line-height: 1.5; max-width: 62ch; margin-top: var(--s5); }
+.intro { font-size: 17px; color: var(--muted); max-width: 72ch; margin-top: var(--s4); }
+.intro strong { color: var(--text); }
+.meta-line { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: var(--s4); font-size: 15px; color: var(--muted); }
+.meta-line span { white-space: nowrap; }
+
+.section { margin-top: var(--s7); }
+.section-head { margin-bottom: var(--s4); }
+.section-head p { color: var(--muted); font-size: 15px; max-width: 72ch; margin-top: var(--s2); }
+.muted { color: var(--muted); }
+.small { font-size: 14px; color: var(--muted); }
+
+/* ------------------------------------------------------------ Kennzahlen */
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--s4); margin-top: var(--s6); }
+.kpi { position: relative; display: flex; flex-direction: column; gap: 2px; min-width: 0; padding: var(--s4) var(--s5) var(--s5); border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface); }
+/* Hauptkennzahl: Linie in der Leitfarbe am oberen Rand */
+.kpi-main { border-color: var(--ctl-ink); box-shadow: inset 0 3px 0 var(--accent), var(--shadow-sm); }
+.kpi-label { font-size: 16px; font-weight: 700; }
+.kpi-def { font-size: 13px; color: var(--muted); min-height: 40px; }
+.kpi-value { font-size: 36px; font-weight: 700; line-height: 1.1; margin-top: var(--s3); white-space: nowrap; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+.kpi-unit { font-size: 16px; font-weight: 400; color: var(--muted); margin-left: 6px; letter-spacing: 0; }
+.kpi-period { font-size: 13px; color: var(--faint); margin-top: 2px; min-height: 22px; }
+.kpi-ref { font-size: 14px; color: var(--muted); margin-top: var(--s2); font-variant-numeric: tabular-nums; }
+.kpi-delta { font-size: 14px; font-weight: 700; display: inline-flex; align-items: baseline; gap: 4px; font-variant-numeric: tabular-nums; }
+.delta-up { color: var(--warm); }
+.delta-down { color: var(--cool); }
+.delta-flat { color: var(--muted); font-weight: 500; }
+
+/* ------------------------------------------------------------ Raster und Flächen */
+.grid-main { display: grid; grid-template-columns: minmax(0, 8fr) minmax(0, 4fr); gap: var(--s6); margin-top: var(--s6); align-items: start; }
+.section .grid-main { margin-top: 0; }
+/* Bedienung steht im Quelltext zuerst (Mobil oben), auf breiten Schirmen rechts */
+.grid-main.aside-first > .aside { grid-column: 2; grid-row: 1; }
+.grid-main.aside-first > .main-col { grid-column: 1; grid-row: 1; }
+.stack { display: flex; flex-direction: column; gap: var(--s5); min-width: 0; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); padding: var(--s5); min-width: 0; }
+.panel-title { font-size: 18px; font-weight: 700; }
+.panel-sub { font-size: 14px; color: var(--muted); margin-top: 4px; }
+.panel p + p { margin-top: var(--s3); }
+.panel .text { font-size: 15px; color: var(--muted); margin-top: var(--s3); }
+.panel .text strong { color: var(--text); }
+.two-col { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s5); align-items: start; }
+.cards3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s5); margin-top: var(--s5); }
+
+/* ------------------------------------------------------------ Diagramme */
+.chart-block { margin: 0; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); padding: var(--s5) var(--s5) var(--s4); min-width: 0; }
+.chart-toolbar { display: flex; flex-wrap: wrap; gap: var(--s2) var(--s4); justify-content: space-between; align-items: flex-start; margin-bottom: var(--s3); }
+.chart-title { font-size: 18px; font-weight: 700; line-height: 1.3; }
+.chart-sub { font-size: 14px; color: var(--muted); margin-top: 2px; }
+.chart-tools { display: flex; flex-wrap: wrap; gap: var(--s2); align-items: center; }
+.chart { position: relative; }
+.chart svg { display: block; width: 100%; height: auto; overflow: visible; font-family: var(--font); }
+.chart text { font-variant-numeric: tabular-nums; }
+.ax text, .lbl { fill: var(--muted); font-size: 12px; }
+.lbl-2 { fill: var(--text); font-size: 13px; }
+.lbl-1 { fill: var(--text); font-size: 12.5px; }
+.lbl-strong { fill: var(--text); font-size: 13px; font-weight: 700; }
+.ref-label { fill: var(--text); font-size: 12px; font-weight: 700; }
+.ref-label-2 { fill: var(--muted); font-size: 12px; font-weight: 700; }
+.lbl-bg { fill: var(--surface); }
 .halo { paint-order: stroke; stroke: var(--surface); stroke-width: 4px; stroke-linejoin: round; }
-.grp { fill: var(--ink-3); font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
-.gridline { stroke: var(--grid); stroke-width: 1; shape-rendering: crispEdges; }
-.axisline { stroke: var(--axis); stroke-width: 1; shape-rendering: crispEdges; }
-.ref-dash { stroke: var(--ink-3); stroke-width: 1.5; stroke-dasharray: 5 4; fill: none; }
-.ref-dot { stroke: var(--ink-2); stroke-width: 1.5; stroke-dasharray: 1.5 3; stroke-linecap: round; fill: none; }
-.m-neutral { fill: var(--neutral); }
-.m-soft { fill: var(--neutral-soft); }
-.m-sel { fill: var(--series-1); }
-.m-s2 { fill: var(--series-2); }
-.m-serious { fill: var(--serious); }
-.m-total { fill: var(--ink-2); }
-.l-s1 { stroke: var(--series-1); stroke-width: 2; fill: none; stroke-linejoin: round; stroke-linecap: round; }
-.l-s2 { stroke: var(--series-2); stroke-width: 2; fill: none; stroke-linejoin: round; stroke-linecap: round; }
-.dot-s1 { fill: var(--series-1); stroke: var(--surface); stroke-width: 2; }
-.dot-s2 { fill: var(--series-2); stroke: var(--surface); stroke-width: 2; }
-.connector { stroke: var(--axis); stroke-width: 1; stroke-dasharray: 2 2; }
+.grp { fill: var(--muted); font-size: 12px; font-weight: 700; }
+.gridline { stroke: var(--line-soft); stroke-width: 1; shape-rendering: crispEdges; }
+.zeroline { stroke: var(--text); stroke-width: 1.4; shape-rendering: crispEdges; }
+.ref-main { stroke: var(--text); stroke-width: 1.4; stroke-dasharray: 6 4; fill: none; }
+.ref-2 { stroke: var(--muted); stroke-width: 1.4; stroke-dasharray: 2 3; fill: none; }
+.ref-area { fill: var(--ref-area); }
+.d-neutral { fill: var(--d-neutral); }
+.d-sel { fill: var(--d-sel); }
+.d-down { fill: var(--cool); }
+.d-up { fill: var(--warm); }
+.d-total { fill: var(--d-ink); }
+.d-flat { fill: var(--line-strong); }
+.d-deficit { fill: var(--warm); }
+.d-surplus { fill: var(--d-surplus); }
+.l-air { stroke: var(--cool); stroke-width: 2; stroke-dasharray: 7 4; fill: none; stroke-linejoin: round; }
+.l-ground { stroke: var(--d-ink); stroke-width: 2; fill: none; stroke-linejoin: round; }
+.m-air { fill: var(--cool); stroke: var(--surface); stroke-width: 1.5; }
+.m-ground { fill: var(--d-ink); stroke: var(--surface); stroke-width: 1.5; }
+.connector { stroke: var(--line-strong); stroke-width: 1; stroke-dasharray: 2 2; }
 .hit { fill: transparent; cursor: pointer; }
-.hit-row:hover .hover-band, .hit-row:focus .hover-band { fill: var(--surface-soft); }
 .hover-band { fill: transparent; }
-.crosshair { stroke: var(--axis); stroke-width: 1; }
-.row-active .lbl-2 { fill: var(--ink); font-weight: 600; }
+.hit-row:hover .hover-band, .hit-row:focus .hover-band { fill: var(--bg-softer); }
+.hit-row:focus { outline: none; }
+.hit-row:focus-visible .hover-band { stroke: var(--accent); stroke-width: 2; }
+.row-active .lbl-2 { font-weight: 700; }
+.crosshair { stroke: var(--line-strong); stroke-width: 1; }
 
-.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 12px; font-size: 13px; color: var(--ink-2); }
-.legend-item { display: flex; align-items: center; gap: 6px; }
-.sw { width: 12px; height: 12px; border-radius: 3px; flex: none; }
-.sw.line { height: 0; width: 18px; border-radius: 0; border-top: 2px solid; }
-.sw.dash { height: 0; width: 18px; border-radius: 0; border-top: 2px dashed var(--ink-3); }
-.sw.dot { height: 0; width: 18px; border-radius: 0; border-top: 2px dotted var(--ink-2); }
+.chart-legend { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: var(--s3); font-size: 13px; color: var(--muted); }
+.legend-item { display: inline-flex; align-items: center; gap: 6px; }
+.legend-swatch { width: 14px; height: 10px; display: inline-block; flex: none; }
+.legend-line { width: 22px; height: 0; display: inline-block; flex: none; border-top: 2px solid; }
+.chart-note { font-size: 14px; color: var(--muted); margin-top: var(--s3); }
+.chart-note strong { color: var(--text); }
 
 .tooltip {
-  position: absolute; pointer-events: none; z-index: 3;
-  background: var(--surface); color: var(--ink);
-  border: 1px solid var(--border); border-radius: 6px;
-  padding: 8px 10px; font-size: 12px; line-height: 1.45;
-  box-shadow: var(--shadow); white-space: nowrap;
+  position: absolute; pointer-events: none; z-index: 30;
+  background: var(--tip-bg); color: var(--tip-ink);
+  padding: 8px 10px; border-radius: var(--r);
+  font-size: 13px; line-height: 1.45; max-width: 300px; white-space: nowrap;
+  box-shadow: var(--shadow); font-variant-numeric: tabular-nums;
   opacity: 0; transition: opacity 0.08s;
 }
 .tooltip.on { opacity: 1; }
-.tooltip b { font-weight: 600; }
-.tooltip .row { display: flex; justify-content: space-between; gap: 16px; font-variant-numeric: tabular-nums; }
-.tooltip .muted { color: var(--ink-3); }
+.tooltip b { font-weight: 700; }
+.tooltip .row { display: flex; justify-content: space-between; gap: 16px; }
+.tooltip .muted { color: var(--tip-muted); }
 
-.note {
-  margin: 0 0 14px; padding: 8px 12px;
-  font-size: 13px; color: var(--ink-2);
-  background: var(--surface-soft);
-  border-left: 3px solid var(--axis);
-  border-radius: 0 var(--radius) var(--radius) 0;
-}
-.two-col { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 24px; align-items: start; }
-@media (max-width: 860px) { .two-col { grid-template-columns: minmax(0, 1fr); } }
+/* ------------------------------------------------------------ Tabellen */
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface); max-width: 100%; margin-top: var(--s4); }
+.table-wrap.tall { max-height: 360px; overflow-y: auto; }
+table.data { border-collapse: collapse; width: 100%; font-size: 14px; font-variant-numeric: tabular-nums; }
+table.data th, table.data td { padding: 9px 12px; border-bottom: 1px solid var(--line-soft); text-align: right; vertical-align: top; }
+table.data th:first-child, table.data td:first-child, table.data .l { text-align: left; }
+table.data th { font-size: 13px; font-weight: 700; background: var(--bg-soft); position: sticky; top: 0; white-space: nowrap; }
+table.data td { white-space: nowrap; }
+table.data td.wrap-ok { white-space: normal; }
+table.data tbody tr:hover { background: var(--bg-softer); }
+table.data tbody tr:last-child td { border-bottom: 0; }
+table.data tr.is-sel td { background: var(--accent-soft); font-weight: 700; }
+.panel .table-wrap { margin-top: var(--s3); }
 
-.inline-controls { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 0 0 12px; font-size: 13px; color: var(--ink-2); }
+/* ------------------------------------------------------------ Hinweise */
+.notice { display: flex; gap: var(--s3); padding: var(--s3) var(--s4); border: 1px solid var(--line); border-left: 4px solid var(--link); border-radius: var(--r); background: var(--accent-soft); font-size: 15px; align-items: flex-start; margin-bottom: var(--s4); }
+.notice svg { width: 20px; height: 20px; flex: none; margin-top: 2px; color: var(--link); }
+.notice-title { font-weight: 700; }
+.notice .small { color: var(--text); }
+.hint { padding: var(--s4) 0; border-top: 1px solid var(--line-soft); }
+.hint:first-child { border-top: 0; padding-top: 0; }
+.hint:last-child { padding-bottom: 0; }
+.hint-title { font-weight: 700; display: flex; flex-wrap: wrap; gap: 8px; align-items: baseline; }
+.hint-text { margin-top: 6px; font-size: 15px; color: var(--muted); max-width: 90ch; }
 
-/* --- Physik --- */
-.physics { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px 28px; margin-top: 18px; }
-.physics h3 { font-size: 14px; margin: 0 0 4px; }
-.physics p { margin: 0 0 8px; font-size: 13.5px; color: var(--ink-2); }
-.physics p strong { color: var(--ink); font-weight: 600; }
-.eq { font-family: var(--mono); font-size: 12.5px; background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius); padding: 8px 10px; margin: 6px 0 10px; overflow-x: auto; white-space: nowrap; color: var(--ink); }
+.eq { font-family: var(--mono); font-size: 13px; background: var(--bg-soft); border: 1px solid var(--line-soft); border-radius: var(--r); padding: 8px 12px; margin: var(--s3) 0; overflow-x: auto; white-space: nowrap; color: var(--text); }
 
-/* --- Tabellen --- */
-table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
-th, td { text-align: right; padding: 5px 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
-th:first-child, td:first-child { text-align: left; }
-th { color: var(--ink-2); font-weight: 600; font-size: 12px; }
-td.l, th.l { text-align: left; }
-tr.is-sel td { background: var(--surface-soft); font-weight: 600; }
-.scroll { overflow-x: auto; }
-.small { font-size: 12.5px; color: var(--ink-2); }
-
-/* --- Aufklapper --- */
-details { border-top: 1px solid var(--border); padding-top: 12px; margin-top: 14px; }
-summary { cursor: pointer; font-size: 14px; font-weight: 600; list-style: none; display: flex; align-items: center; gap: 8px; }
-summary::-webkit-details-marker { display: none; }
-summary::before {
-  content: ""; width: 6px; height: 6px; flex: none;
-  border-right: 1.5px solid var(--ink-3); border-bottom: 1.5px solid var(--ink-3);
-  transform: rotate(-45deg); transition: transform 0.15s;
-}
-details[open] > summary::before { transform: rotate(45deg); }
-.proof { margin-top: 12px; font-size: 13.5px; color: var(--ink-2); }
-.proof h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-3); margin: 18px 0 6px; font-weight: 600; }
+/* Aufklapper im Nachweis */
+details.panel { padding: 0; }
+details.panel + details.panel { margin-top: var(--s4); }
+details.panel > summary { cursor: pointer; list-style: none; display: flex; align-items: center; justify-content: space-between; gap: var(--s3); padding: var(--s4) var(--s5); font-size: 17px; font-weight: 700; border-radius: var(--r-lg); }
+details.panel > summary:hover { background: var(--bg-softer); }
+details.panel > summary::-webkit-details-marker { display: none; }
+details.panel > summary svg { width: 20px; height: 20px; flex: none; color: var(--muted); transition: transform var(--t); }
+details.panel[open] > summary { border-bottom: 1px solid var(--line-soft); border-radius: var(--r-lg) var(--r-lg) 0 0; }
+details.panel[open] > summary svg { transform: rotate(180deg); }
+.details-body { padding: var(--s4) var(--s5) var(--s5); }
+.proof { font-size: 15px; color: var(--muted); }
+.proof h3 { font-size: 16px; color: var(--text); margin: var(--s5) 0 var(--s2); }
 .proof h3:first-child { margin-top: 0; }
-.proof p { margin: 0 0 8px; }
-.proof ul { margin: 0 0 8px; padding-left: 18px; }
-.downloads { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.proof p { margin: 0 0 var(--s2); }
+.proof ul { margin: 0; padding-left: 20px; }
+.proof li + li { margin-top: 4px; }
+.proof .table-wrap { margin: var(--s2) 0 var(--s3); }
 
-.limits { margin: 8px 0 0; padding-left: 18px; font-size: 13.5px; color: var(--ink-2); }
-.limits li { margin-bottom: 6px; }
-.limits strong { color: var(--ink); font-weight: 600; }
+.download-list { list-style: none; margin: var(--s3) 0 0; padding: 0; border-top: 1px solid var(--line); }
+.download-list button { display: flex; width: 100%; align-items: center; gap: var(--s3); padding: 14px 12px; border: 0; border-bottom: 1px solid var(--line); background: transparent; text-align: left; font-size: 16px; cursor: pointer; color: var(--text); transition: background var(--t), color var(--t); }
+.download-list button:hover { background: var(--bg-softer); color: var(--accent); }
+.download-list svg { width: 20px; height: 20px; color: var(--muted); flex: none; }
+.download-list .dl-sub { display: block; font-size: 13px; color: var(--muted); }
 
-footer { margin-top: 24px; font-size: 12px; color: var(--ink-3); line-height: 1.7; }
-footer p { margin: 0 0 6px; }
-
-@media (max-width: 560px) {
-  .card { padding: 16px 14px; }
-  .tile.hero .tile-value { font-size: 40px; }
-  .app-header .inner { flex-direction: column-reverse; }
-  .theme-toggle { align-self: flex-end; }
+/* ------------------------------------------------------------ Responsiv */
+@media (max-width: 1180px) {
+  .grid-main, .grid-main.aside-first { grid-template-columns: minmax(0, 1fr); }
+  .grid-main.aside-first > .aside, .grid-main.aside-first > .main-col { grid-column: 1; grid-row: auto; }
+  .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cards3 { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 860px) { .two-col { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 1024px) {
+  .wrap { padding: 0 24px; }
+  .site-header .wrap { min-height: 84px; }
+  h1 { font-size: 34px; }
+  .kpi-value { font-size: 32px; }
+  .site-footer .wrap { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+}
+@media (max-width: 720px) {
+  .wrap { padding: 0 16px; }
+  .metabar .wrap { gap: var(--s2); }
+  .site-header .wrap { min-height: 68px; gap: var(--s2); }
+  .brand-name { display: none; }
+  .brand-mark { border-right: 0; padding-right: 0; font-size: 13px; letter-spacing: 0.04em; }
+  .main-nav::after { content: ""; position: absolute; top: 0; right: 0; bottom: 0; width: 40px; pointer-events: none; background: linear-gradient(to right, transparent, var(--bg)); }
+  .nav-item { font-size: 16px; padding: 14px 2px; }
+  .main-nav .wrap { gap: var(--s4); }
+  .breadcrumb { display: none; }
+  .content { padding-top: var(--s5); }
+  h1 { font-size: 26px; }
+  .lead { font-size: 17px; }
+  .intro { font-size: 15px; }
+  .eyebrow { font-size: 15px; }
+  .kpis { gap: var(--s2); }
+  .kpi { padding: var(--s3); }
+  .kpi-value { font-size: 26px; }
+  .kpi-def { font-size: 12px; }
+  .kpi-ref, .kpi-delta { font-size: 13px; }
+  .chart-block { padding: var(--s4) var(--s3) var(--s3); }
+  .panel { padding: var(--s4); }
+  details.panel > summary { padding: var(--s3) var(--s4); }
+  .details-body { padding: var(--s3) var(--s4) var(--s4); }
+  .section { margin-top: var(--s6); }
+  .site-footer .wrap { grid-template-columns: minmax(0, 1fr); gap: var(--s5); }
+  .meta-line span { white-space: normal; }
+  .hide-mobile { display: none !important; }
 }
 @media print {
-  .theme-toggle, .presets, .downloads { display: none; }
-  .card { break-inside: avoid; }
+  .metabar, .main-nav, .breadcrumb, .site-header .btn, .presets, .chart-tools, .download-list, .site-footer .footer-links { display: none !important; }
+  .chart-block, .panel, .kpi { break-inside: avoid; }
 }
 </style>
 </head>
 <body>
+<a class="skip-link" href="#inhalt">Zum Inhalt springen</a>
 
-<header class="app-header">
-  <div class="inner">
-    <div>
-      <h1>Winterstromlücke 2050</h1>
-      <p>Wie Massnahmen im Schweizer Gebäudepark die saisonale Stromlücke verändern. Interaktive Auswertung der Studie Kelevitz et al., <i>Energies</i> 2025.</p>
+<div class="metabar">
+  <div class="wrap">
+    <span class="hide-mobile">Gebäudepark und Stromversorgung der Schweiz 2050</span>
+    <div class="spacer"></div>
+    <span class="chip chip-dot chip-study hide-mobile" id="srcChip">Studienwert</span>
+    <div class="seg" role="group" aria-label="Darstellung">
+      <button type="button" data-theme-set="auto" aria-pressed="true">Auto</button>
+      <button type="button" data-theme-set="light" aria-pressed="false">Hell</button>
+      <button type="button" data-theme-set="dark" aria-pressed="false">Dunkel</button>
     </div>
-    <button id="theme" type="button" class="theme-toggle" title="Darstellung umschalten">Auto</button>
+  </div>
+</div>
+
+<header class="site-header">
+  <div class="wrap">
+    <a href="#uebersicht" class="brand" aria-label="Winterstromlücke 2050, Übersicht">
+      <span class="brand-mark">WINTER <span class="slash">/</span> STROM</span>
+      <span class="brand-name">Winterstromlücke 2050<small>Massnahmen im Gebäudepark und ihre Wirkung auf den Winterstrom</small></span>
+    </a>
+    <div class="spacer"></div>
+    <a class="btn" href="#daten"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19.5h14"/></svg>Daten</a>
   </div>
 </header>
 
-<div class="wrap">
-
-<noscript><div class="card"><p class="lead">Diese Seite rechnet im Browser und braucht JavaScript. Die Studienwerte stehen auch in der <a href="README.md">README</a>.</p></div></noscript>
-
-<section class="card" aria-labelledby="intro-h">
-  <p class="eyebrow" id="intro-h">Worum es geht</p>
-  <p class="lead">Ohne fossile Importe und ohne Kernkraft produziert die Schweiz 2050 im Sommer mehr Strom, als sie braucht, und im Winter weniger. Die <strong>Winterstromlücke</strong> ist der Teil dieses Defizits, der sich nicht innerhalb einer Woche durch Speicher ausgleichen lässt: die Summe aller negativen Wochenbilanzen eines Jahres.</p>
-  <p class="lead">Die Studie simuliert diese Lücke mit dem Energiesystemmodell PowerCheck, erweitert um ein stündliches Modell des Gebäudeparks (60 Kategorien aus Klimazone, Nutzung und Dämmstandard, Datenbasis GWR). Im Basisszenario der Energieperspektiven 2050+ ergibt sie <strong>10.7&nbsp;TWh</strong>. Vier Hebel im Gebäudesektor werden variiert. Hier lassen sie sich frei kombinieren.</p>
-  <p class="source-line">Kelevitz K., Haller M., Frommelt M., Meier B. (2025): <i>Influence of Scenarios for Space Heating and Domestic Hot Water in Buildings on the Winter Electricity Demand of Switzerland in 2050.</i> Energies 18, 5601. SPF Institut für Solartechnik, OST Rapperswil. <a href="https://doi.org/10.3390/en18215601">doi.org/10.3390/en18215601</a></p>
-</section>
-
-<section class="card" aria-labelledby="ctl-h">
-  <h2 id="ctl-h">Massnahmen</h2>
-  <p class="subcaption">Die vorgewählte Stufe entspricht den Energieperspektiven 2050+ (EP2050+) des BFE. Die übrigen Stufen sind die Varianten der Studie, bewusst auch solche, die die Autoren selbst als extrem bezeichnen.</p>
-  <div class="controls" id="controls"></div>
-  <div class="presets" role="group" aria-label="Studienszenario laden">
-    <span>Studienszenario laden:</span>
-    <button type="button" class="btn" data-preset="B">Basis EP2050+</button>
-    <button type="button" class="btn" data-preset="R0.5">Sanierung wie heute</button>
-    <button type="button" class="btn" data-preset="Com1">Kombination mittel</button>
-    <button type="button" class="btn" data-preset="Com2">Kombination hoch</button>
+<nav class="main-nav" aria-label="Abschnitte">
+  <div class="wrap">
+    <a class="nav-item" href="#uebersicht" aria-current="true">Übersicht</a>
+    <a class="nav-item" href="#beitraege">Beiträge</a>
+    <a class="nav-item" href="#winterhebel">Winterhebel</a>
+    <a class="nav-item" href="#wochen">Wochenbilanz</a>
+    <a class="nav-item" href="#physik">Physik</a>
+    <a class="nav-item" href="#grenzen">Grenzen</a>
+    <a class="nav-item" href="#nachweis">Nachweis</a>
   </div>
-</section>
+</nav>
 
-<section class="card" aria-labelledby="res-h">
-  <h2 id="res-h" class="sr">Ergebnis</h2>
-  <div class="tiles">
-    <div class="tile hero">
-      <div class="tile-label">Winterstromlücke 2050 <span class="badge" id="srcBadge">Studienwert</span></div>
-      <div class="tile-value"><span id="gapValue">10.7</span><span class="tile-unit">TWh</span></div>
-      <div class="tile-delta" id="gapDelta"></div>
+<nav class="breadcrumb wrap" aria-label="Pfad">
+  <ol><li><a href="https://logicc.dev/">logicc.dev</a></li><li><span aria-current="page">Winterstromlücke 2050</span></li></ol>
+</nav>
+
+<main id="inhalt" class="content wrap" tabindex="-1">
+
+<noscript><div class="notice"><div>Diese Seite rechnet im Browser und braucht JavaScript. Die Studienwerte stehen auch in der <a href="README.md">README</a>.</div></div></noscript>
+
+<!-- ============================================================ Übersicht -->
+<section id="uebersicht" class="anchor" aria-labelledby="h1">
+  <p class="eyebrow">Interaktive Studienauswertung</p>
+  <h1 id="h1">Winterstromlücke 2050</h1>
+  <p class="lead" id="keyMsg" aria-live="polite"></p>
+  <p class="intro">Ohne fossile Importe und ohne Kernkraft produziert die Schweiz 2050 im Sommer mehr Strom, als sie braucht, und im Winter weniger. Die <strong>Winterstromlücke</strong> ist der Teil dieses Defizits, der sich nicht innerhalb einer Woche durch Speicher ausgleichen lässt: die Summe aller negativen Wochenbilanzen eines Jahres.</p>
+  <p class="intro">Die Studie simuliert diese Lücke mit dem Energiesystemmodell PowerCheck, erweitert um ein stündliches Modell des Gebäudeparks (60 Kategorien aus Klimazone, Nutzung und Dämmstandard, Datenbasis GWR). Im Basisszenario der Energieperspektiven 2050+ ergibt sie <strong>10.7&nbsp;TWh</strong>. Vier Hebel im Gebäudesektor werden variiert. Hier lassen sie sich frei kombinieren.</p>
+  <div class="meta-line">
+    <span>Kelevitz, Haller, Frommelt, Meier (2025), Energies 18, 5601</span>
+    <span>Modell PowerCheck, SPF Institut für Solartechnik, OST</span>
+    <a href="https://doi.org/10.3390/en18215601">doi.org/10.3390/en18215601</a>
+  </div>
+
+  <div class="kpis" role="group" aria-label="Kennzahlen der aktuellen Auswahl">
+    <div class="kpi kpi-main">
+      <div class="kpi-label">Winterstromlücke</div>
+      <div class="kpi-def">Summe der Defizitwochen 2050, nicht innerhalb einer Woche ausgleichbar</div>
+      <div class="kpi-value"><span id="gapValue">10.7</span><span class="kpi-unit">TWh</span></div>
+      <div class="kpi-period"><span class="tag tag-study" id="srcBadge">Studienwert · Fig. 8</span></div>
+      <div class="kpi-ref">Basis EP2050+: 10.7 TWh · BFE: 9 TWh</div>
+      <div id="gapDelta"></div>
     </div>
-    <div class="tile">
-      <div class="tile-label">Strom für Heizung und Warmwasser, Jahr</div>
-      <div class="tile-value"><span id="elValue">12.4</span><span class="tile-unit">TWh</span></div>
-      <div class="tile-delta" id="elDelta"></div>
-      <div class="tile-note">2019: 10.9 TWh</div>
+    <div class="kpi">
+      <div class="kpi-label">Gebäudestrom, Jahr</div>
+      <div class="kpi-def">Wärmepumpen und Direktheizungen für Raumwärme und Warmwasser</div>
+      <div class="kpi-value"><span id="elValue">12.4</span><span class="kpi-unit">TWh</span></div>
+      <div class="kpi-period">Jahr 2050</div>
+      <div class="kpi-ref">Basis EP2050+: 12.4 TWh · 2019: 10.9 TWh</div>
+      <div id="elDelta"></div>
     </div>
-    <div class="tile">
-      <div class="tile-label">Davon im Januar</div>
-      <div class="tile-value"><span id="janValue">2.70</span><span class="tile-unit">TWh</span></div>
-      <div class="tile-delta" id="janDelta"></div>
-      <div class="tile-note">kältester Monat, höchste Last</div>
+    <div class="kpi">
+      <div class="kpi-label">Gebäudestrom, Januar</div>
+      <div class="kpi-def">Kältester Monat, höchste Last</div>
+      <div class="kpi-value"><span id="janValue">2.70</span><span class="kpi-unit">TWh</span></div>
+      <div class="kpi-period">Januar 2050</div>
+      <div class="kpi-ref">Basis EP2050+: 2.70 TWh</div>
+      <div id="janDelta"></div>
     </div>
-    <div class="tile">
-      <div class="tile-label">Wärmebedarf Gebäude, Jahr</div>
-      <div class="tile-value"><span id="heatValue">58.6</span><span class="tile-unit" id="heatUnit">TWh</span></div>
-      <div class="tile-delta" id="heatDelta"></div>
-      <div class="tile-note">Raumwärme und Warmwasser; 2019: 86.7 TWh</div>
+    <div class="kpi">
+      <div class="kpi-label">Wärmebedarf Gebäude</div>
+      <div class="kpi-def">Raumwärme und Warmwasser, Nutzenergie</div>
+      <div class="kpi-value"><span id="heatValue">58.6</span><span class="kpi-unit" id="heatUnit">TWh</span></div>
+      <div class="kpi-period">Jahr 2050</div>
+      <div class="kpi-ref">Basis EP2050+: 58.6 TWh · 2019: 86.7 TWh</div>
+      <div id="heatDelta"></div>
     </div>
   </div>
-  <p class="summary" id="summary" aria-live="polite"></p>
-</section>
 
-<section class="card">
-  <figure>
-    <figcaption>Alle Studienszenarien und die aktuelle Auswahl</figcaption>
-    <p class="subcaption">Winterstromlücke 2050 in TWh. Zwölf Szenarien aus Fig. 8 und das Szenario «Sanierung 0.5 %/a» aus Fig. 9. Eine Zeile anklicken lädt das Szenario.</p>
-    <div class="chart-holder" id="scHolder">
-      <svg id="scChart" role="img" aria-labelledby="scDesc"></svg>
-      <p class="sr" id="scDesc">Balkendiagramm der Winterstromlücke: Sanierung 0.5 Prozent 13.9 TWh, Basis 10.7 TWh, Sanierung 1.5 Prozent 8.6 TWh, Sanierung 2 Prozent 6.0 TWh, Warmwasser-Wärmerückgewinnung 20 und 50 Prozent 10.5 und 10.3 TWh, Erdsonden 50 und 80 Prozent 10.4 und 10.0 TWh, Erwärmung 1 bis 3 Kelvin 10.4, 10.0 und 9.7 TWh, Kombination mittel 8.0 TWh, Kombination hoch 5.9 TWh. Alle Werte stehen auch in der Tabelle weiter unten.</p>
-      <div class="tooltip" id="scTip"></div>
-    </div>
-    <div class="legend">
-      <span class="legend-item"><span class="sw" style="background:var(--series-1)"></span>Aktuelle Auswahl</span>
-      <span class="legend-item"><span class="sw" style="background:var(--neutral)"></span>Studienszenario</span>
-      <span class="legend-item"><span class="sw dot"></span>Basis 10.7 TWh (PowerCheck)</span>
-      <span class="legend-item"><span class="sw dash"></span>Schätzung EP2050+ 9 TWh (BFE)</span>
-    </div>
-  </figure>
-</section>
-
-<section class="card">
-  <div class="two-col">
-    <figure>
-      <figcaption>Was jeder Hebel beiträgt</figcaption>
-      <p class="subcaption">Von der Basis zur Auswahl, in TWh. Wirken mehrere Hebel zusammen, ist jeder einzelne kleiner als allein: Sie teilen sich denselben, bereits verringerten Strombedarf.</p>
-      <div class="chart-holder" id="wfHolder">
-        <svg id="wfChart" role="img" aria-labelledby="wfDesc"></svg>
-        <p class="sr" id="wfDesc" aria-live="polite"></p>
-        <div class="tooltip" id="wfTip"></div>
+  <div class="grid-main aside-first">
+    <section class="panel aside" aria-labelledby="ctl-h">
+      <h2 class="panel-title" id="ctl-h">Massnahmen</h2>
+      <p class="panel-sub">Vorgewählt sind die Annahmen der Energieperspektiven 2050+ (EP2050+) des BFE. Die übrigen Stufen sind die Varianten der Studie, bewusst auch solche, die die Autoren selbst als extrem bezeichnen.</p>
+      <div id="controls" style="margin-top:16px"></div>
+      <div class="presets" role="group" aria-labelledby="pre-h">
+        <div class="field-label" id="pre-h">Studienszenario laden</div>
+        <div class="row">
+          <button type="button" class="btn btn-sm" data-preset="B">Basis EP2050+</button>
+          <button type="button" class="btn btn-sm" data-preset="R0.5">Sanierung wie heute</button>
+          <button type="button" class="btn btn-sm" data-preset="Com1">Kombination mittel</button>
+          <button type="button" class="btn btn-sm" data-preset="Com2">Kombination hoch</button>
+        </div>
       </div>
-      <div class="legend">
-        <span class="legend-item"><span class="sw" style="background:var(--series-2)"></span>senkt die Lücke</span>
-        <span class="legend-item"><span class="sw" style="background:var(--serious)"></span>vergrössert die Lücke</span>
-        <span class="legend-item"><span class="sw" style="background:var(--ink-2)"></span>Stand</span>
+    </section>
+
+    <div class="stack main-col">
+    <figure class="chart-block" aria-labelledby="sc-t">
+      <div class="chart-toolbar">
+        <div>
+          <h2 class="chart-title" id="sc-t">Winterstromlücke 2050 je Studienszenario, Schweiz</h2>
+          <p class="chart-sub">TWh · zwölf Szenarien aus Fig. 8, «Sanierung 0.5 %/a» aus Fig. 9 · Zeile anklicken lädt das Szenario</p>
+        </div>
+        <div class="chart-tools">
+          <button type="button" class="btn btn-ghost btn-sm" data-table="scTableWrap" aria-expanded="false" aria-controls="scTableWrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="14" rx="1.5"/><path d="M3.5 10h17M3.5 14.5h17M10 5v14"/></svg>Tabelle</button>
+        </div>
+      </div>
+      <div class="chart" id="scHolder">
+        <svg id="scChart" role="img" aria-labelledby="scDesc"></svg>
+        <p class="sr-only" id="scDesc">Balkendiagramm der Winterstromlücke: Sanierung 0.5 Prozent 13.9 TWh, Basis 10.7 TWh, Sanierung 1.5 Prozent 8.6 TWh, Sanierung 2 Prozent 6.0 TWh, Warmwasser-Wärmerückgewinnung 20 und 50 Prozent 10.5 und 10.3 TWh, Erdsonden 50 und 80 Prozent 10.4 und 10.0 TWh, Erwärmung 1 bis 3 Kelvin 10.4, 10.0 und 9.7 TWh, Kombination mittel 8.0 TWh, Kombination hoch 5.9 TWh. Alle Werte stehen auch in der Tabelle.</p>
+        <div class="tooltip" id="scTip"></div>
+      </div>
+      <div class="chart-legend">
+        <span class="legend-item"><span class="legend-swatch" style="background:var(--d-sel)"></span>Aktuelle Auswahl</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:var(--d-neutral)"></span>Studienszenario</span>
+        <span class="legend-item"><span class="legend-line" style="border-top:2px dashed var(--text)"></span>Basis 10.7 TWh (PowerCheck)</span>
+        <span class="legend-item"><span class="legend-line" style="border-top:2px dotted var(--muted)"></span>Schätzung EP2050+ 9 TWh (BFE)</span>
+      </div>
+      <div id="scTableWrap" hidden>
+        <div class="table-wrap">
+          <table class="data" id="scTable">
+            <thead><tr><th>Code</th><th class="l">Szenario</th><th>Lücke</th><th>Δ Basis</th><th>Strom Jahr</th><th>Strom Januar</th><th>Wärme Jahr</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <p class="chart-note">Alle Werte in TWh. Digitalisiert aus Fig. 6a, 7a, 7b, 8a, 8b und 9 der Studie; Auflösung ≈ 0.01 TWh. Für das Szenario R 0.5 weist die Studie keinen Wärmebedarf aus.</p>
       </div>
     </figure>
-    <div>
-      <p class="eyebrow">Winterhebel</p>
-      <p class="small" style="margin:0 0 10px">Wie viel Winterlücke eine eingesparte Terawattstunde Gebäudestrom schliesst. Abgeleitet aus den Einzelszenarien der Studie. Je Massnahme ist der Wert über alle Stufen nahezu konstant.</p>
-      <table aria-label="Winterhebel je Massnahme">
+    <figure class="chart-block anchor" id="beitraege" aria-labelledby="wf-t">
+      <div class="chart-toolbar">
+        <div>
+          <h2 class="chart-title" id="wf-t">Beitrag je Massnahme, von der Basis EP2050+ zur Auswahl</h2>
+          <p class="chart-sub">Winterstromlücke 2050 in TWh</p>
+        </div>
+        <div class="chart-tools">
+          <button type="button" class="btn btn-ghost btn-sm" data-table="wfTableWrap" aria-expanded="false" aria-controls="wfTableWrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="14" rx="1.5"/><path d="M3.5 10h17M3.5 14.5h17M10 5v14"/></svg>Tabelle</button>
+        </div>
+      </div>
+      <div class="chart" id="wfHolder">
+        <svg id="wfChart" role="img" aria-labelledby="wfDesc"></svg>
+        <p class="sr-only" id="wfDesc" aria-live="polite"></p>
+        <div class="tooltip" id="wfTip"></div>
+      </div>
+      <div class="chart-legend">
+        <span class="legend-item"><span class="legend-swatch" style="background:var(--cool)"></span>senkt die Lücke</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:var(--warm)"></span>vergrössert die Lücke</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:var(--d-ink)"></span>Stand</span>
+      </div>
+      <p class="chart-note">Wirken mehrere Hebel zusammen, ist jeder einzelne kleiner als allein: Sie teilen sich denselben, bereits verringerten Strombedarf.</p>
+      <div id="wfTableWrap" hidden>
+        <div class="table-wrap">
+          <table class="data">
+            <thead><tr><th>Schritt</th><th>Stufe</th><th>Beitrag [TWh]</th><th>Stand [TWh]</th></tr></thead>
+            <tbody id="wfTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ Winterhebel -->
+<section id="winterhebel" class="section anchor" aria-labelledby="lev-h">
+  <div class="section-head">
+    <h2 id="lev-h">Winterhebel</h2>
+    <p>Wie viel Winterlücke eine eingesparte Terawattstunde Gebäudestrom schliesst. Abgeleitet aus den Einzelszenarien der Studie; je Massnahme über alle Stufen nahezu konstant.</p>
+  </div>
+  <div class="panel two-col">
+    <div class="table-wrap" style="margin-top:0">
+      <table class="data" aria-label="Winterhebel je Massnahme">
         <thead><tr><th>Massnahme</th><th>TWh Lücke je TWh Strom</th></tr></thead>
         <tbody id="leverBody"></tbody>
       </table>
-      <p class="small" style="margin-top:10px">Die Sanierung spart dort, wo es kalt ist: Der Wärmeverlust ist proportional zur Temperaturdifferenz innen–aussen, also in den Defizitwochen am grössten. Die Erwärmung spart dagegen gleichmässig über die Heizsaison und verkürzt sie an den Rändern, in Wochen ohne Defizit.</p>
+    </div>
+    <div>
+      <p class="text" style="margin-top:0">Die Sanierung spart dort, wo es kalt ist: Der Wärmeverlust ist proportional zur Temperaturdifferenz innen–aussen, also in den Defizitwochen am grössten.</p>
+      <p class="text">Die Erwärmung spart dagegen gleichmässig über die Heizsaison und verkürzt sie an den Rändern, in Wochen ohne Defizit. Deshalb schliesst eine eingesparte Terawattstunde aus der Sanierung gut doppelt so viel Lücke wie eine aus der Erwärmung.</p>
     </div>
   </div>
 </section>
 
-<section class="card">
-  <figure>
-    <figcaption>Wochenbilanz von Produktion und Verbrauch 2050, Basisszenario</figcaption>
-    <p class="subcaption">Differenz je Woche in TWh, nach Fig. 5 der Studie. Die Lücke ist die Summe der negativen Wochen. Die Massnahmen oben verkleinern vor allem die Balken von November bis Februar.</p>
-    <p class="note">Den Sommerüberschuss überschätzt das Modell deutlich, weil der wachsende Kühlbedarf nicht abgebildet ist. Die Autoren raten ausdrücklich davon ab, ihn zu zitieren. Er ist deshalb nur blass gezeichnet.</p>
-    <div class="chart-holder" id="wkHolder">
+<!-- ============================================================ Wochenbilanz -->
+<section id="wochen" class="section anchor" aria-labelledby="wk-h">
+  <div class="section-head">
+    <h2 id="wk-h">Wochenbilanz 2050</h2>
+    <p>Die Lücke ist die Summe der negativen Wochen. Die Massnahmen verkleinern vor allem die Balken von November bis Februar.</p>
+  </div>
+  <figure class="chart-block" aria-labelledby="wk-t">
+    <div class="notice" role="note">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5M12 8h.01"/></svg>
+      <div>
+        <div class="notice-title">Sommerüberschuss nicht zitieren</div>
+        <div class="small">Den Überschuss im Sommer überschätzt das Modell deutlich, weil der wachsende Kühlbedarf nicht abgebildet ist. Die Autoren raten ausdrücklich davon ab, ihn zu zitieren. Er ist deshalb nur blass gezeichnet.</div>
+      </div>
+    </div>
+    <div class="chart-toolbar">
+      <div>
+        <h3 class="chart-title" id="wk-t">Produktion minus Verbrauch je Woche, Schweiz 2050, Basisszenario</h3>
+        <p class="chart-sub">TWh je Woche · nach Fig. 5 der Studie · negativ = Defizit</p>
+      </div>
+      <div class="chart-tools">
+        <button type="button" class="btn btn-ghost btn-sm" data-table="wkTableWrap" aria-expanded="false" aria-controls="wkTableWrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="14" rx="1.5"/><path d="M3.5 10h17M3.5 14.5h17M10 5v14"/></svg>Tabelle</button>
+      </div>
+    </div>
+    <div class="chart" id="wkHolder">
       <svg id="wkChart" role="img" aria-labelledby="wkDesc"></svg>
-      <p class="sr" id="wkDesc">Säulendiagramm der wöchentlichen Bilanz 2050: Defizite von Oktober bis März mit bis zu 0.78 TWh pro Woche im Januar, Überschüsse von April bis September mit bis zu 1.5 TWh pro Woche im Juni. Summe der Defizite 10.65 TWh.</p>
+      <p class="sr-only" id="wkDesc">Säulendiagramm der wöchentlichen Bilanz 2050: Defizite von Oktober bis März mit bis zu 0.78 TWh pro Woche im Januar, Überschüsse von April bis September mit bis zu 1.5 TWh pro Woche im Juni. Summe der Defizite 10.65 TWh.</p>
       <div class="tooltip" id="wkTip"></div>
     </div>
-    <div class="legend">
-      <span class="legend-item"><span class="sw" style="background:var(--serious)"></span>Defizitwoche (Teil der Lücke)</span>
-      <span class="legend-item"><span class="sw" style="background:var(--neutral-soft)"></span>Überschusswoche</span>
+    <div class="chart-legend">
+      <span class="legend-item"><span class="legend-swatch" style="background:var(--warm)"></span>Defizitwoche (Teil der Lücke)</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:var(--d-surplus)"></span>Überschusswoche</span>
     </div>
-    <p class="small" id="wkSum" style="margin:10px 0 0"></p>
+    <p class="chart-note" id="wkSum"></p>
+    <div id="wkTableWrap" hidden>
+      <div class="table-wrap tall">
+        <table class="data">
+          <thead><tr><th>Woche</th><th>Bilanz [TWh]</th><th class="l">Art</th></tr></thead>
+          <tbody id="wkTableBody"></tbody>
+        </table>
+      </div>
+    </div>
   </figure>
 </section>
 
-<section class="card" aria-labelledby="phy-h">
-  <h2 id="phy-h">Physik dahinter</h2>
-  <p class="subcaption">Die Gleichungen und Kennwerte stammen aus Abschnitt 2.3 und den Anhängen A–D der Studie.</p>
-  <figure>
-    <figcaption style="font-size:14px">Leistungszahl der Wärmepumpe nach dem Studienmodell</figcaption>
-    <div class="inline-controls" role="group" aria-label="Vorlauftemperatur">
-      <span>Vorlauftemperatur:</span>
-      <button type="button" class="btn" data-sink="35" aria-pressed="true">35 °C, Fussbodenheizung</button>
-      <button type="button" class="btn" data-sink="45" aria-pressed="false">45 °C</button>
-      <button type="button" class="btn" data-sink="55" aria-pressed="false">55 °C, Radiatoren</button>
-    </div>
-    <div class="chart-holder" id="copHolder">
-      <svg id="copChart" role="img" aria-labelledby="copDesc"></svg>
-      <p class="sr" id="copDesc" aria-live="polite"></p>
-      <div class="tooltip" id="copTip"></div>
-    </div>
-    <div class="legend">
-      <span class="legend-item"><span class="sw line" style="border-color:var(--series-1)"></span>Luft-Wasser-Wärmepumpe</span>
-      <span class="legend-item"><span class="sw line" style="border-color:var(--series-2)"></span>Erdsonden-Wärmepumpe</span>
-    </div>
-    <p class="small" id="copNote" style="margin:10px 0 0"></p>
-  </figure>
+<!-- ============================================================ Physik -->
+<section id="physik" class="section anchor" aria-labelledby="phy-h">
+  <div class="section-head">
+    <h2 id="phy-h">Physik dahinter</h2>
+    <p>Die Gleichungen und Kennwerte stammen aus Abschnitt 2.3 und den Anhängen A–D der Studie.</p>
+  </div>
+  <div class="grid-main">
+    <figure class="chart-block" aria-labelledby="cop-t">
+      <div class="chart-toolbar">
+        <div>
+          <h3 class="chart-title" id="cop-t">Leistungszahl der Wärmepumpe über der Quelltemperatur</h3>
+          <p class="chart-sub" id="copSub">COP nach dem Studienmodell, Anhang D · Vorlauf 35 °C</p>
+        </div>
+        <div class="chart-tools">
+          <div class="seg" role="group" aria-label="Vorlauftemperatur">
+            <button type="button" data-sink="35" aria-pressed="true" title="Fussbodenheizung">35 °C</button>
+            <button type="button" data-sink="45" aria-pressed="false">45 °C</button>
+            <button type="button" data-sink="55" aria-pressed="false" title="Radiatoren">55 °C</button>
+          </div>
+          <button type="button" class="btn btn-ghost btn-sm" data-table="copTableWrap" aria-expanded="false" aria-controls="copTableWrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="14" rx="1.5"/><path d="M3.5 10h17M3.5 14.5h17M10 5v14"/></svg>Tabelle</button>
+        </div>
+      </div>
+      <div class="chart" id="copHolder">
+        <svg id="copChart" role="img" aria-labelledby="copDesc"></svg>
+        <p class="sr-only" id="copDesc" aria-live="polite"></p>
+        <div class="tooltip" id="copTip"></div>
+      </div>
+      <div class="chart-legend">
+        <span class="legend-item"><span class="legend-line" style="border-top:2px dashed var(--cool)"></span>Luft-Wasser-Wärmepumpe</span>
+        <span class="legend-item"><span class="legend-line" style="border-top:2px solid var(--d-ink)"></span>Erdsonden-Wärmepumpe</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:var(--ref-area);outline:1px solid var(--line)"></span>Sondentemperatur im Januar</span>
+      </div>
+      <p class="chart-note" id="copNote"></p>
+      <div id="copTableWrap" hidden>
+        <div class="table-wrap">
+          <table class="data">
+            <thead><tr><th>Quelle [°C]</th><th>COP Luft</th><th>COP Sonde</th></tr></thead>
+            <tbody id="copTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </figure>
 
-  <div class="physics">
-    <div>
-      <h3>Wärmepumpe: Carnot mal Gütegrad</h3>
+    <aside class="panel" aria-labelledby="hp-h">
+      <h3 class="panel-title" id="hp-h">Wärmepumpe: Carnot mal Gütegrad</h3>
       <div class="eq">COP = η · T<sub>K</sub> / max(T<sub>K</sub> − T<sub>V</sub>, 15 K)</div>
-      <p>Verdampfungs- und Kondensationstemperatur T<sub>V</sub>, T<sub>K</sub> in Kelvin, je um die Grädigkeit des Wärmeübertragers von der Quell- und der Vorlauftemperatur entfernt: <strong>5 K bei Luft, 3 K bei der Sonde</strong>. Gütegrad η = 0.45 (Luft) und 0.50 (Sonde). Unter 5 °C Lufttemperatur zieht die Studie für das Abtauen 0.5 vom COP ab.</p>
-      <p>Daraus folgen Jahresarbeitszahlen von <strong>3.03 (Luft) und 3.75 (Sonde)</strong> im Einfamilienhaus, 3.39 und 4.44 im Mehrfamilienhaus (Tab. 2). Die Sonde ändert den Wärmebedarf nicht, nur den Strom, der ihn deckt.</p>
-    </div>
-    <div>
-      <h3>Gebäudehülle: Verlust proportional zu U · A · ΔT</h3>
+      <p class="text">Verdampfungs- und Kondensationstemperatur T<sub>V</sub>, T<sub>K</sub> in Kelvin, je um die Grädigkeit des Wärmeübertragers von der Quell- und der Vorlauftemperatur entfernt: <strong>5 K bei Luft, 3 K bei der Sonde</strong>. Gütegrad η = 0.45 (Luft) und 0.50 (Sonde). Unter 5 °C Lufttemperatur zieht die Studie für das Abtauen 0.5 vom COP ab.</p>
+      <p class="text">Daraus folgen Jahresarbeitszahlen von <strong>3.03 (Luft) und 3.75 (Sonde)</strong> im Einfamilienhaus, 3.39 und 4.44 im Mehrfamilienhaus (Tab. 2). Die Sonde ändert den Wärmebedarf nicht, nur den Strom, der ihn deckt.</p>
+    </aside>
+  </div>
+
+  <div class="cards3">
+    <div class="panel">
+      <h3 class="panel-title">Gebäudehülle: Verlust proportional zu <span style="white-space:nowrap">U · A · ΔT</span></h3>
       <div class="eq">Q̇ = Σ U<sub>i</sub> A<sub>i</sub> (θ<sub>i</sub> − θ<sub>e</sub>) + ṅ V ρ c<sub>p</sub> (θ<sub>i</sub> − θ<sub>e</sub>)</div>
-      <p>Wer saniert, wechselt im Modell in den Standard «ab 2001»: Fenster <strong>3.0 → 1.0 W/(m²K)</strong>, Dämmschicht 1.8 → 0.18, Dach 0.7 → 0.15, Infiltration 0.4 → 0.05 h⁻¹, Heizgrenze 18 → 14 °C (Tab. A1, Einfamilienhaus vor 1960).</p>
-      <p>Weil die Einsparung mit θ<sub>i</sub> − θ<sub>e</sub> wächst, fällt sie in den kältesten Wochen an. Das sind genau die Wochen mit Defizit.</p>
+      <p class="text">Wer saniert, wechselt im Modell in den Standard «ab 2001»: Fenster <strong>3.0 → 1.0 W/(m²K)</strong>, Dämmschicht 1.8 → 0.18, Dach 0.7 → 0.15, Infiltration 0.4 → 0.05 h⁻¹, Heizgrenze 18 → 14 °C (Tab. A1, Einfamilienhaus vor 1960).</p>
+      <p class="text">Weil die Einsparung mit θ<sub>i</sub> − θ<sub>e</sub> wächst, fällt sie in den kältesten Wochen an. Das sind genau die Wochen mit Defizit.</p>
     </div>
-    <div>
-      <h3>Klimaerwärmung: Verschiebung der Stundenwerte</h3>
-      <p>Die Studie addiert 1, 2 oder 3 K auf jeden Stundenwert des Referenzwetters. Der Wärmebedarf sinkt dadurch um rund <strong>3.7 TWh oder 6 % je Kelvin</strong> (58.6 → 54.8 → 51.1 → 47.6 TWh), die Lücke aber nur um <strong>0.32 TWh je Kelvin</strong>.</p>
-      <p>Zum Vergleich: Eine Sanierungsrate von 1.5 %/a spart mit 11.0 TWh gleich viel Wärme wie +3 K, schliesst aber mehr als doppelt so viel Lücke (2.1 statt 0.95 TWh). Von ihrer Einsparung fallen 15 % in den Januar, bei der Erwärmung 12 %.</p>
+    <div class="panel">
+      <h3 class="panel-title">Klimaerwärmung: Verschiebung der Stundenwerte</h3>
+      <p class="text">Die Studie addiert 1, 2 oder 3 K auf jeden Stundenwert des Referenzwetters. Der Wärmebedarf sinkt dadurch um rund <strong>3.7 TWh oder 6 % je Kelvin</strong> (58.6 → 54.8 → 51.1 → 47.6 TWh), die Lücke aber nur um <strong>0.32 TWh je Kelvin</strong>.</p>
+      <p class="text">Zum Vergleich: Eine Sanierungsrate von 1.5 %/a spart mit 11.0 TWh gleich viel Wärme wie +3 K, schliesst aber mehr als doppelt so viel Lücke (2.1 statt 0.95 TWh). Von ihrer Einsparung fallen 15 % in den Januar, bei der Erwärmung 12 %.</p>
     </div>
-    <div>
-      <h3>Warmwasser: ganzjährig fast gleichmässig</h3>
-      <p>Der Warmwasserbedarf (11.94 TWh Endenergie 2019) schwankt im Modell sinusförmig mit einem Februar-Maximum 15 % über dem Mittel. Wärmerückgewinnung deckt einen festen Anteil davon. Sie spart deshalb das ganze Jahr, im Winter nur wenig mehr als im Sommer.</p>
-      <p>Speicher- und Zirkulationsverluste sind im BFE-Wert enthalten und nicht separat modelliert.</p>
+    <div class="panel">
+      <h3 class="panel-title">Warmwasser: ganzjährig fast gleichmässig</h3>
+      <p class="text">Der Warmwasserbedarf (11.94 TWh Endenergie 2019) schwankt im Modell sinusförmig mit einem Februar-Maximum 15 % über dem Mittel. Wärmerückgewinnung deckt einen festen Anteil davon. Sie spart deshalb das ganze Jahr, im Winter nur wenig mehr als im Sommer.</p>
+      <p class="text">Speicher- und Zirkulationsverluste sind im BFE-Wert enthalten und nicht separat modelliert.</p>
     </div>
   </div>
 </section>
 
-<section class="card" aria-labelledby="lim-h">
-  <h2 id="lim-h">Einordnung und Grenzen</h2>
-  <ul class="limits">
-    <li><strong>Grössenordnung.</strong> Heute importiert die Schweiz rund 200 TWh Energieträger pro Jahr (Heizöl, Treibstoffe, Erdgas, Uran, Stand Ende 2024). Die Lücke von 10.7 TWh ist kein neuer Bedarf, sondern der Rest dieser Importe nach der Dekarbonisierung.</li>
-    <li><strong>PowerCheck gegen EP2050+.</strong> Das BFE schätzt 9 TWh, PowerCheck ergibt 10.7 TWh. Die Studie nennt als Gründe einen tieferen Winteranteil der Photovoltaik (27 % statt 31 %) und die 3 TWh Elektrolyse im Sommer samt Rückverstromung, die PowerCheck nicht abbildet.</li>
-    <li><strong>Was-wäre-wenn, keine Prognose.</strong> 2 %/a Sanierung, 50 % Wärmerückgewinnung und 80 % Erdsonden sind laut Autoren extrem oder unrealistisch und ohne gesellschaftliche, wirtschaftliche oder geologische Grenzen gerechnet. Absolute Werte sind unsicher; die Unterschiede zwischen den Szenarien gelten als belastbar.</li>
-    <li><strong>Der Zeitpunkt zählt.</strong> Sanierung wirkt kumulativ ab 2019. Wer erst 2045 beginnt, müsste laut Studie über 13 %/a sanieren, um dasselbe zu erreichen.</li>
-    <li><strong>Nicht modelliert:</strong> Kühlbedarf im Sommer, Nutzerverhalten, unterschiedliche Erneuerungszyklen einzelner Bauteile, regionale Unterschiede der Heizsysteme. Die Sondentemperatur ist wegen üblicher Überdimensionierung um 2 K angehoben.</li>
-    <li><strong>Prüfnotiz.</strong> Die Studie schreibt, 2 %/a von 2019 bis 2050 bedeute die Sanierung von 85 % des Bestands. 31 Jahre zu 2 %/a ergeben rechnerisch 62 % der Energiebezugsfläche. Die 85 % beziehen sich vermutlich auf die Bauten vor 2001; die Studie sagt das nicht ausdrücklich.</li>
-  </ul>
+<!-- ============================================================ Grenzen -->
+<section id="grenzen" class="section anchor" aria-labelledby="lim-h">
+  <div class="section-head">
+    <h2 id="lim-h">Einordnung und Grenzen</h2>
+    <p>Was die Zahlen aussagen und was nicht.</p>
+  </div>
+  <div class="panel">
+    <div class="hint">
+      <div class="hint-title">Grössenordnung</div>
+      <p class="hint-text">Heute importiert die Schweiz rund 200 TWh Energieträger pro Jahr (Heizöl, Treibstoffe, Erdgas, Uran, Stand Ende 2024). Die Lücke von 10.7 TWh ist kein neuer Bedarf, sondern der Rest dieser Importe nach der Dekarbonisierung.</p>
+    </div>
+    <div class="hint">
+      <div class="hint-title">PowerCheck gegen EP2050+</div>
+      <p class="hint-text">Das BFE schätzt 9 TWh, PowerCheck ergibt 10.7 TWh. Die Studie nennt als Gründe einen tieferen Winteranteil der Photovoltaik (27 % statt 31 %) und die 3 TWh Elektrolyse im Sommer samt Rückverstromung, die PowerCheck nicht abbildet.</p>
+    </div>
+    <div class="hint">
+      <div class="hint-title">Was-wäre-wenn, keine Prognose</div>
+      <p class="hint-text">2 %/a Sanierung, 50 % Wärmerückgewinnung und 80 % Erdsonden sind laut Autoren extrem oder unrealistisch und ohne gesellschaftliche, wirtschaftliche oder geologische Grenzen gerechnet. Absolute Werte sind unsicher; die Unterschiede zwischen den Szenarien gelten als belastbar.</p>
+    </div>
+    <div class="hint">
+      <div class="hint-title">Der Zeitpunkt zählt</div>
+      <p class="hint-text">Sanierung wirkt kumulativ ab 2019. Wer erst 2045 beginnt, müsste laut Studie über 13 %/a sanieren, um dasselbe zu erreichen.</p>
+    </div>
+    <div class="hint">
+      <div class="hint-title">Nicht modelliert</div>
+      <p class="hint-text">Kühlbedarf im Sommer, Nutzerverhalten, unterschiedliche Erneuerungszyklen einzelner Bauteile, regionale Unterschiede der Heizsysteme. Die Sondentemperatur ist wegen üblicher Überdimensionierung um 2 K angehoben.</p>
+    </div>
+    <div class="hint">
+      <div class="hint-title"><span class="tag">Prüfnotiz</span>85 % des Bestands</div>
+      <p class="hint-text">Die Studie schreibt, 2 %/a von 2019 bis 2050 bedeute die Sanierung von 85 % des Bestands. 31 Jahre zu 2 %/a ergeben rechnerisch 62 % der Energiebezugsfläche. Die 85 % beziehen sich vermutlich auf die Bauten vor 2001; die Studie sagt das nicht ausdrücklich.</p>
+    </div>
+  </div>
 </section>
 
-<section class="card" aria-labelledby="calc-h">
-  <h2 id="calc-h">Nachweis</h2>
-  <p class="subcaption" style="margin-bottom:0">Woher jede Zahl stammt und wie Kombinationen gerechnet werden, die die Studie nicht simuliert hat.</p>
+<!-- ============================================================ Nachweis -->
+<section id="nachweis" class="section anchor" aria-labelledby="calc-h">
+  <div class="section-head">
+    <h2 id="calc-h">Nachweis</h2>
+    <p>Woher jede Zahl stammt und wie Kombinationen gerechnet werden, die die Studie nicht simuliert hat.</p>
+  </div>
+  <div class="grid-main">
+    <details class="panel" id="proofDetails">
+      <summary>Berechnung anzeigen<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 10l5 5 5-5"/></svg></summary>
+      <div class="details-body proof" id="proof"></div>
+    </details>
 
-  <details id="proofDetails">
-    <summary>Berechnung anzeigen</summary>
-    <div class="proof" id="proof"></div>
-  </details>
-
-  <details>
-    <summary>Tabelle aller Studienszenarien</summary>
-    <div class="scroll" style="margin-top:12px">
-      <table id="scTable">
-        <thead>
-          <tr><th class="l">Code</th><th class="l">Szenario</th><th>Lücke</th><th>Δ Basis</th><th>Strom Jahr</th><th>Strom Januar</th><th>Wärme Jahr</th></tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
-    <p class="small" style="margin-top:8px">Alle Werte in TWh. Digitalisiert aus Fig. 6a, 7a, 7b, 8a, 8b und 9 der Studie; Auflösung ≈ 0.01 TWh. Für das Szenario R 0.5 weist die Studie keinen Wärmebedarf aus.</p>
-  </details>
-
-  <details>
-    <summary>Daten herunterladen</summary>
-    <p class="small" style="margin:12px 0 0">Die digitalisierten Studienwerte unter CC BY 4.0 wie die Studie selbst. Bitte die Originalpublikation zitieren.</p>
-    <div class="downloads">
-      <button type="button" class="btn" id="dlScen">Szenarien (CSV)</button>
-      <button type="button" class="btn" id="dlWeek">Wochenbilanz (CSV)</button>
-      <button type="button" class="btn" id="dlJson">Alles mit Herkunft (JSON)</button>
-    </div>
-  </details>
+    <aside class="panel anchor" id="daten" aria-labelledby="dl-h">
+      <h3 class="panel-title" id="dl-h">Daten herunterladen</h3>
+      <p class="panel-sub">Die digitalisierten Studienwerte unter CC BY 4.0 wie die Studie selbst. Bitte die Originalpublikation zitieren.</p>
+      <ul class="download-list">
+        <li><button type="button" id="dlScen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19.5h14"/></svg><span>Szenarien<span class="dl-sub">CSV, 13 Szenarien mit Stufen und vier Kennzahlen</span></span></button></li>
+        <li><button type="button" id="dlWeek"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19.5h14"/></svg><span>Wochenbilanz<span class="dl-sub">CSV, 53 Wochen, Basisszenario 2050</span></span></button></li>
+        <li><button type="button" id="dlJson"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19.5h14"/></svg><span>Alles mit Herkunft<span class="dl-sub">JSON mit Winterhebeln, Referenzen und Wärmepumpenmodell</span></span></button></li>
+      </ul>
+    </aside>
+  </div>
 </section>
 
-<footer>
-  <p><strong>Quelle:</strong> Kelevitz K., Haller M., Frommelt M., Meier B. (2025), Energies 18, 5601, <a href="https://doi.org/10.3390/en18215601">doi.org/10.3390/en18215601</a>, CC BY 4.0. Modell PowerCheck, SPF Institut für Solartechnik, OST. Basisdaten GWR (BFS), Energieperspektiven 2050+ (BFE).</p>
-  <p><strong>Diese Seite:</strong> Digitalisierung, Kombinationsmodell und Darstellung. Keine Veröffentlichung der Studienautoren. Code unter MIT-Lizenz, <a href="https://github.com/Raffa3l/Winterstromluecke-2050">github.com/Raffa3l/Winterstromluecke-2050</a>. Stand 3. Oktober 2026.</p>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div>
+      <h2>Über diese Anwendung</h2>
+      <p>Interaktive Auswertung der Studie Kelevitz et al. (2025) zur Winterstromlücke 2050: Digitalisierung der Studienwerte, ein Kombinationsmodell für nicht simulierte Massnahmenpakete und die Darstellung. Keine Veröffentlichung der Studienautoren, des SPF oder des BFE.</p>
+    </div>
+    <div>
+      <h2>Grenzen</h2>
+      <p>Was-wäre-wenn-Rechnung, keine Prognose. Simulierte Szenarien zeigen den Studienwert, alle anderen Kombinationen sind Modellschätzungen, an den beiden Kombinationsszenarien auf höchstens 5 % geprüft. Der Kühlbedarf im Sommer ist nicht modelliert.</p>
+    </div>
+    <div>
+      <h2>Weitere Informationen</h2>
+      <ul class="footer-links">
+        <li><a href="https://doi.org/10.3390/en18215601">Studie, Energies 18, 5601<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h16M14 6l6 6-6 6"/></svg></a></li>
+        <li><a href="docs/energies-18-05601.pdf">Studie als PDF<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h16M14 6l6 6-6 6"/></svg></a></li>
+        <li><a href="https://github.com/Raffa3l/Winterstromluecke-2050#readme">Methodik und Daten (README)<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h16M14 6l6 6-6 6"/></svg></a></li>
+        <li><a href="https://github.com/Raffa3l/Winterstromluecke-2050">Quellcode auf GitHub<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h16M14 6l6 6-6 6"/></svg></a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="wrap">Quelle: Kelevitz K., Haller M., Frommelt M., Meier B. (2025), Energies 18, 5601, CC BY 4.0. Modell PowerCheck, SPF Institut für Solartechnik, OST. Basisdaten GWR (BFS), Energieperspektiven 2050+ (BFE). Code unter MIT-Lizenz. Stand 04.10.2026.</div>
+  </div>
 </footer>
-
-</div>
 
 <script>
 "use strict";
@@ -556,7 +885,7 @@ const WOCHEN = [-0.194,-0.783,-0.714,-0.711,-0.703,-0.631,-0.462,0.000,0.086,-0.
 const HEBEL = [
   { key: "r", name: "Sanierungsrate Gebäudehülle", kurz: "Sanierung",
     stufen: [
-      { val: "0.5 %/a", tag: "heutige Realrate", code: "R0.5", note: "Laut Studie die tatsächliche Rate heute. Die Lücke wächst auf 13.9 TWh (+30 %), der Gebäudestrom auf 17 TWh (+37 %)." },
+      { val: "0.5 %/a", tag: "heute",            code: "R0.5", note: "Laut Studie die tatsächliche Rate heute. Die Lücke wächst auf 13.9 TWh (+30 %), der Gebäudestrom auf 17 TWh (+37 %)." },
       { val: "1.1 %/a", tag: "EP2050+",          code: "B",    note: "Annahme der Energieperspektiven 2050+. Sie wird heute nicht erreicht." },
       { val: "1.5 %/a", tag: "erhöht",           code: "R1.5", note: "Die Lücke sinkt um 20 % auf 8.6 TWh. Wirkt nur, wenn ab sofort stetig saniert wird." },
       { val: "2.0 %/a", tag: "extrem",           code: "R2",   note: "Die Lücke sinkt um 44 % auf 6.0 TWh, fast so weit wie mit allen Hebeln zusammen (5.9 TWh)." }
@@ -587,7 +916,7 @@ const DEFAULT_SEL = [1, 0, 0, 0];
    Formatierung: Punkt als Dezimal-, Apostroph als Tausendertrennzeichen,
    echtes Minuszeichen, schmales Leerzeichen vor Prozent und Einheit.
    ========================================================================== */
-const NB = " ";
+const NB = " ";
 function zahl(v, d = 1) {
   const s = Math.abs(v).toFixed(d);
   const [i, f] = s.split(".");
@@ -660,13 +989,14 @@ function buildControls() {
   const host = document.getElementById("controls");
   HEBEL.forEach((h, hi) => {
     const fs = document.createElement("fieldset");
+    fs.className = "lever";
     const radios = h.stufen.map((st, si) => {
       const id = `p-${h.key}-${si}`;
       return `<input type="radio" name="p-${h.key}" id="${id}" value="${si}"${state[hi] === si ? " checked" : ""}>` +
-        `<label for="${id}"><span class="val">${esc(st.val)}</span><span class="tag">${esc(st.tag)}</span></label>`;
+        `<label for="${id}"><span class="val">${esc(st.val)}</span>${st.tag ? `<span class="lv-tag">${esc(st.tag)}</span>` : ""}</label>`;
     }).join("");
-    fs.innerHTML = `<legend><span class="num">0${hi + 1}</span>${esc(h.name)}</legend><div class="seg">${radios}</div>` +
-      `<p class="note-param" id="note-${h.key}"></p>`;
+    fs.innerHTML = `<legend>${esc(h.name)}</legend><div class="seg">${radios}</div>` +
+      `<p class="lever-note" id="note-${h.key}"></p>`;
     fs.addEventListener("change", e => {
       state[hi] = Number(e.target.value);
       update();
@@ -686,11 +1016,15 @@ function setSel(sel) {
   update();
 }
 
+/* Pfeil zeigt die Richtung des Werts, die Farbe die Wirkung auf den Winter:
+   blau entlastet (weniger Lücke, weniger Strom), rot belastet. */
 function deltaHtml(v, base, d) {
-  if (v === null) return `<span class="arrow flat"></span>keine Studienangabe`;
+  if (v === null) return `<span class="kpi-delta delta-flat">keine Studienangabe</span>`;
   const diff = v - base, pct = diff / base * 100;
-  const cls = Math.abs(pct) < 0.5 ? "flat" : diff < 0 ? "down" : "up";
-  return `<span class="arrow ${cls}" aria-hidden="true"></span>${vz(diff, d)}${NB}TWh · ${vz(pct, 0)}${NB}% gegenüber Basis`;
+  if (Math.abs(pct) < 0.5) return `<span class="kpi-delta delta-flat">wie Basis</span>`;
+  const down = diff < 0;
+  return `<span class="kpi-delta ${down ? "delta-down" : "delta-up"}"><span aria-hidden="true">${down ? "▼" : "▲"}</span>${vz(diff, d)}${NB}TWh · ${vz(pct, 0)}${NB}%` +
+    `<span class="sr-only"> gegenüber Basis, ${down ? "entlastet den Winter" : "belastet den Winter"}</span></span>`;
 }
 
 function update() {
@@ -714,17 +1048,23 @@ function update() {
   document.getElementById("heatDelta").innerHTML = deltaHtml(r.heat, BASE.heat, 1);
 
   const badge = document.getElementById("srcBadge");
+  const chip = document.getElementById("srcChip");
   if (r.study) {
     badge.textContent = r.study.code === "R0.5" ? "Studienwert · Fig. 9" : "Studienwert · Fig. 8";
-    badge.className = "badge study";
+    badge.className = "tag tag-study";
     badge.title = "Von der Studie simuliert: " + r.study.name;
+    chip.textContent = "Studienwert · " + r.study.name;
+    chip.className = "chip chip-dot chip-study hide-mobile";
   } else {
     badge.textContent = "Modellschätzung";
-    badge.className = "badge";
+    badge.className = "tag tag-model";
     badge.title = "Kombination, die die Studie nicht simuliert hat. Geprüft an den Kombinationsszenarien mit höchstens 5 % Abweichung.";
+    chip.textContent = "Modellschätzung · nicht simuliert";
+    chip.className = "chip chip-dot chip-model hide-mobile";
   }
+  chip.title = badge.title;
 
-  document.getElementById("summary").innerHTML = summaryText(r);
+  document.getElementById("keyMsg").innerHTML = summaryText(r);
   renderAll();
   renderProof();
   renderTable();
@@ -733,17 +1073,16 @@ function update() {
 function summaryText(r) {
   const diff = r.gap - BASE.gap, pct = diff / BASE.gap * 100;
   const quelle = r.study
-    ? `Die Studie hat diese Kombination simuliert (${esc(r.study.name)}).`
+    ? `Die Studie hat diese Kombination simuliert.`
     : `Diese Kombination hat die Studie nicht simuliert; der Wert ist eine Schätzung aus den Einzelszenarien.`;
   if (Math.abs(diff) < 0.005) {
-    return `Mit den Annahmen der Energieperspektiven 2050+ fehlen im Winter 2050 rund <strong>${twh(r.gap)}</strong>, die sich nicht innerhalb einer Woche ausgleichen lassen. ${quelle}`;
+    return `Mit den Annahmen der Energieperspektiven 2050+ fehlen im Winter 2050 rund ${twh(r.gap)} Strom, die sich nicht innerhalb einer Woche ausgleichen lassen.`;
   }
   const i = r.dG.reduce((best, v, j, a) => Math.abs(v) > Math.abs(a[best]) ? j : best, 0);
   const richt = diff < 0 ? "kleiner" : "grösser";
-  const groesster = Math.abs(r.dG[i]) > 0.005
-    ? ` Den grössten Anteil hat ${HEBEL[i].kurz === "Erwärmung" ? "die Erwärmung" : HEBEL[i].kurz === "Erdsonden" ? "der Wechsel zu Erdsonden" : HEBEL[i].kurz === "Sanierung" ? "die Sanierungsrate" : "die Wärmerückgewinnung"} mit ${vz(-r.dG[i], 1)}${NB}TWh.`
-    : "";
-  return `Die Winterstromlücke wird mit dieser Auswahl <strong>${richt}: ${twh(r.gap)}</strong> statt ${twh(BASE.gap)} (${vz(pct, 0)}${NB}%).${groesster} ${quelle}`;
+  const wer = { Erwärmung: "die Erwärmung", Erdsonden: "der Wechsel zu Erdsonden", Sanierung: "die Sanierungsrate" }[HEBEL[i].kurz] || "die Wärmerückgewinnung";
+  const groesster = Math.abs(r.dG[i]) > 0.005 ? ` Den grössten Anteil hat ${wer} mit ${vz(-r.dG[i], 1)}${NB}TWh.` : "";
+  return `Mit dieser Auswahl wird die Winterstromlücke ${richt}: ${twh(r.gap)} statt ${twh(BASE.gap)} (${vz(pct, 0)}${NB}%).${groesster} ${quelle}`;
 }
 
 /* ===========================================================================
@@ -758,27 +1097,23 @@ function S(tag, attrs, parent, text) {
   return e;
 }
 function clear(svg) { while (svg.firstChild) svg.removeChild(svg.firstChild); }
+/* Fläche in Hintergrundfarbe hinter einer Beschriftung, damit Referenzlinien sie nicht durchkreuzen */
+function backdrop(t) {
+  const b = t.getBBox();
+  if (!b.width) return t;
+  t.parentNode.insertBefore(S("rect", { x: b.x - 2, y: b.y, width: b.width + 4, height: b.height, class: "lbl-bg" }), t);
+  return t;
+}
 function widthOf(holder) { return Math.max(300, Math.floor(holder.clientWidth)); }
-/* Säule mit 4 px Rundung am Datenende, eckig an der Grundlinie. */
+/* Balken eckig, ohne Rundung */
 function hBar(g, x0, x1, y, h, cls) {
-  const left = Math.min(x0, x1), right = Math.max(x0, x1), w = right - left;
-  const r = Math.min(4, w / 2, h / 2);
-  if (w < 0.5) return S("rect", { x: left, y, width: Math.max(w, 1), height: h, class: cls }, g);
-  const toRight = x1 >= x0;
-  const d = toRight
-    ? `M${left},${y}H${right - r}Q${right},${y} ${right},${y + r}V${y + h - r}Q${right},${y + h} ${right - r},${y + h}H${left}Z`
-    : `M${right},${y}H${left + r}Q${left},${y} ${left},${y + r}V${y + h - r}Q${left},${y + h} ${left + r},${y + h}H${right}Z`;
-  return S("path", { d, class: cls }, g);
+  const left = Math.min(x0, x1), w = Math.max(Math.abs(x1 - x0), 1);
+  return S("rect", { x: left, y, width: w, height: h, class: cls }, g);
 }
 function vBar(g, x, w, y0, y1, cls) {
-  const top = Math.min(y0, y1), bot = Math.max(y0, y1), h = bot - top;
-  const r = Math.min(3, w / 2, h / 2);
+  const top = Math.min(y0, y1), h = Math.abs(y1 - y0);
   if (h < 0.5) return null;
-  const up = y1 < y0;
-  const d = up
-    ? `M${x},${bot}V${top + r}Q${x},${top} ${x + r},${top}H${x + w - r}Q${x + w},${top} ${x + w},${top + r}V${bot}Z`
-    : `M${x},${top}V${bot - r}Q${x},${bot} ${x + r},${bot}H${x + w - r}Q${x + w},${bot} ${x + w},${bot - r}V${top}Z`;
-  return S("path", { d, class: cls }, g);
+  return S("rect", { x, y: top, width: w, height: h, class: cls }, g);
 }
 function tip(el, holder, html, cx, cy) {
   el.innerHTML = html;
@@ -807,7 +1142,7 @@ function renderScenarios() {
   clear(svg);
   const W = widthOf(holder);
   const narrow = W < 560;
-  const labelW = narrow ? 112 : 210, right = 54, rowH = 26, barH = 14, grpH = 24, top = 26;
+  const labelW = narrow ? 112 : 210, right = 54, rowH = 26, barH = 14, grpH = 26, top = 28;
   const xMax = 16;
   const plotW = W - labelW - right;
   const X = v => labelW + v / xMax * plotW;
@@ -826,23 +1161,23 @@ function renderScenarios() {
 
   const gGrid = S("g", { class: "ax" }, svg);
   for (let v = 0; v <= xMax; v += narrow ? 4 : 2) {
-    S("line", { x1: X(v), x2: X(v), y1: top - 4, y2: H - 22, class: "gridline" }, gGrid);
+    S("line", { x1: X(v), x2: X(v), y1: top - 4, y2: H - 22, class: v === 0 ? "zeroline" : "gridline" }, gGrid);
     S("text", { x: X(v), y: H - 6, "text-anchor": "middle" }, gGrid, zahl(v, 0));
   }
   S("text", { x: W - right + 40, y: H - 6, "text-anchor": "end" }, gGrid, "TWh");
 
-  // Referenzen hinter den Balken; die Beschriftungen tragen einen Halo
+  // Referenzen hinter den Balken, direkt mit Wert beschriftet
   const gRef = S("g", {}, svg);
-  S("line", { x1: X(BASE.gap), x2: X(BASE.gap), y1: top - 6, y2: H - 22, class: "ref-dot" }, gRef);
-  S("line", { x1: X(EP2050_BFE), x2: X(EP2050_BFE), y1: top - 6, y2: H - 22, class: "ref-dash" }, gRef);
-  S("text", { x: X(BASE.gap) + 4, y: top - 12, class: "lbl" }, gRef, "Basis");
-  S("text", { x: X(EP2050_BFE) - 4, y: top - 12, class: "lbl", "text-anchor": "end" }, gRef, "BFE");
+  S("line", { x1: X(BASE.gap), x2: X(BASE.gap), y1: top - 8, y2: H - 22, class: "ref-main" }, gRef);
+  S("line", { x1: X(EP2050_BFE), x2: X(EP2050_BFE), y1: top - 8, y2: H - 22, class: "ref-2" }, gRef);
+  S("text", { x: X(BASE.gap) + 5, y: top - 14, class: "ref-label halo" }, gRef, "Basis " + zahl(BASE.gap, 1));
+  S("text", { x: X(EP2050_BFE) - 5, y: top - 14, class: "ref-label-2 halo", "text-anchor": "end" }, gRef, "BFE " + zahl(EP2050_BFE, 0));
 
   const gRows = S("g", {}, svg);
   const sel = result;
   rows.forEach(r => {
     if (r.type === "grp") {
-      S("text", { x: 0, y: r.y + 17, class: "grp" }, gRows, r.name);
+      S("text", { x: 0, y: r.y + 18, class: "grp" }, gRows, r.name);
       return;
     }
     const isSel = r.type === "sel";
@@ -851,10 +1186,10 @@ function renderScenarios() {
     const active = !isSel && sel.study && sel.study.code === s.code;
     const g = S("g", { class: "hit-row" + (active ? " row-active" : "") }, gRows);
     S("rect", { x: 0, y: r.y, width: W, height: rowH, class: "hover-band" }, g);
-    const label = isSel ? "Aktuelle Auswahl" : (narrow ? s.kurz : s.name);
-    S("text", { x: isSel ? 0 : 10, y: r.y + rowH / 2 + 4, class: isSel ? "lbl-strong" : "lbl-2" }, g, label);
-    hBar(g, X(0), X(val), r.y + (rowH - barH) / 2, barH, isSel || active ? "m-sel" : "m-neutral");
-    S("text", { x: X(val) + 6, y: r.y + rowH / 2 + 4, class: (isSel ? "lbl-strong" : "lbl-1") + " halo" }, g, zahl(val, 1));
+    const label = isSel ? (narrow ? "Auswahl" : "Aktuelle Auswahl") : (narrow ? s.kurz : s.name);
+    S("text", { x: isSel ? 0 : 12, y: r.y + rowH / 2 + 4, class: isSel ? "lbl-strong" : "lbl-2" }, g, label);
+    hBar(g, X(0), X(val), r.y + (rowH - barH) / 2, barH, isSel || active ? "d-sel" : "d-neutral");
+    backdrop(S("text", { x: X(val) + 6, y: r.y + rowH / 2 + 4, class: isSel || active ? "lbl-strong" : "lbl-1" }, g, zahl(val, 1)));
     const hit = S("rect", { x: 0, y: r.y, width: W, height: rowH, class: "hit" }, g);
     const html = isSel
       ? `<b>Aktuelle Auswahl</b><div class="row"><span>Lücke</span><span>${twh(val, 2)}</span></div><div class="row"><span>gegenüber Basis</span><span>${vz((val - BASE.gap) / BASE.gap * 100, 1)}${NB}%</span></div><div class="muted">${sel.study ? "Studienwert" : "Modellschätzung"}</div>`
@@ -882,7 +1217,7 @@ function renderWaterfall() {
   clear(svg);
   const r = result;
   const W = widthOf(holder);
-  const labelW = W < 420 ? 118 : 150, right = 64, rowH = 30, barH = 16, top = 6;
+  const labelW = W < 420 ? 150 : 160, right = 64, rowH = 34, barH = 18, top = 6;
   const steps = [{ name: "Basis EP2050+", type: "total", from: 0, to: BASE.gap }];
   let run = BASE.gap;
   HEBEL.forEach((h, i) => {
@@ -906,29 +1241,31 @@ function renderWaterfall() {
 
   const gAx = S("g", { class: "ax" }, svg);
   for (let v = 0; v <= xMax; v += W < 480 ? 4 : 2) {
-    S("line", { x1: X(v), x2: X(v), y1: top, y2: H - 22, class: "gridline" }, gAx);
+    S("line", { x1: X(v), x2: X(v), y1: top, y2: H - 22, class: v === 0 ? "zeroline" : "gridline" }, gAx);
     S("text", { x: X(v), y: H - 6, "text-anchor": "middle" }, gAx, zahl(v, 0));
   }
+  S("text", { x: W - right + 50, y: H - 6, "text-anchor": "end" }, gAx, "TWh");
   const g = S("g", {}, svg);
-  const desc = [];
+  const desc = [], rowsTab = [];
   steps.forEach((s, j) => {
     const y = top + j * rowH;
     const yb = y + (rowH - barH) / 2;
-    S("text", { x: 0, y: y + rowH / 2 + (s.sub ? -1 : 4), class: s.type === "total" ? "lbl-strong" : "lbl-2" }, g, s.name);
+    S("text", { x: 0, y: y + rowH / 2 + (s.sub ? -2 : 4), class: s.type === "total" ? "lbl-strong" : "lbl-2" }, g, s.name);
     if (s.sub) S("text", { x: 0, y: y + rowH / 2 + 12, class: "lbl" }, g, s.sub);
-    let cls = "m-total";
-    if (s.type !== "total") cls = Math.abs(s.d) < 0.005 ? "m-soft" : s.d < 0 ? "m-s2" : "m-serious";
+    let cls = "d-total";
+    if (s.type !== "total") cls = Math.abs(s.d) < 0.005 ? "d-flat" : s.d < 0 ? "d-down" : "d-up";
     if (s.type === "total") hBar(g, X(0), X(s.to), yb, barH, cls);
-    else if (Math.abs(s.d) < 0.005) S("rect", { x: X(s.from) - 1, y: yb, width: 2, height: barH, class: "m-soft" }, g);
-    else S("rect", { x: X(Math.min(s.from, s.to)), y: yb, width: Math.max(1, Math.abs(X(s.to) - X(s.from))), height: barH, rx: 2, class: cls }, g);
+    else if (Math.abs(s.d) < 0.005) S("rect", { x: X(s.from) - 1, y: yb, width: 2, height: barH, class: "d-flat" }, g);
+    else hBar(g, X(s.from), X(s.to), yb, barH, cls);
     // Verbindungslinie zum nächsten Schritt
     if (j < steps.length - 1) {
       S("line", { x1: X(s.to), x2: X(s.to), y1: yb + barH, y2: yb + rowH, class: "connector" }, g);
     }
     const lab = s.type === "total" ? zahl(s.to, 1) : (Math.abs(s.d) < 0.005 ? "±0" : vz(s.d, 2));
     const lx = Math.max(X(s.from), X(s.to)) + 6;
-    S("text", { x: lx, y: y + rowH / 2 + 4, class: (s.type === "total" ? "lbl-strong" : "lbl-1") + " halo" }, g, lab);
+    backdrop(S("text", { x: lx, y: y + rowH / 2 + 4, class: s.type === "total" ? "lbl-strong" : "lbl-1" }, g, lab));
     desc.push(`${s.name}${s.sub ? " " + s.sub : ""}: ${lab} TWh`);
+    rowsTab.push(`<tr><td>${esc(s.name)}</td><td>${s.sub ? esc(s.sub) : "–"}</td><td>${s.type === "total" ? "–" : vz(s.d, 2)}</td><td>${zahl(s.to, 2)}</td></tr>`);
 
     const hit = S("rect", { x: 0, y, width: W, height: rowH, class: "hit", style: "cursor:default" }, g);
     let html;
@@ -947,6 +1284,7 @@ function renderWaterfall() {
     hit.addEventListener("pointerleave", () => untip(tipEl));
   });
   document.getElementById("wfDesc").textContent = "Beiträge zur Winterstromlücke: " + desc.join("; ") + ".";
+  document.getElementById("wfTableBody").innerHTML = rowsTab.join("");
 }
 
 /* ===========================================================================
@@ -958,7 +1296,7 @@ function renderWeeks() {
   const tipEl = document.getElementById("wkTip");
   clear(svg);
   const W = widthOf(holder);
-  const left = 44, right = 8, top = 10, bottom = 28, H = W < 560 ? 240 : 280;
+  const left = 44, right = 8, top = 22, bottom = 28, H = W < 560 ? 250 : 300;
   const yMin = -1, yMax = 1.6;
   const plotW = W - left - right, plotH = H - top - bottom;
   const n = WOCHEN.length;
@@ -970,9 +1308,10 @@ function renderWeeks() {
 
   const gAx = S("g", { class: "ax" }, svg);
   for (let v = -0.5; v <= 1.5 + 1e-9; v += 0.5) {
-    S("line", { x1: left, x2: W - right, y1: Y(v), y2: Y(v), class: Math.abs(v) < 1e-9 ? "axisline" : "gridline" }, gAx);
+    if (Math.abs(v) > 1e-9) S("line", { x1: left, x2: W - right, y1: Y(v), y2: Y(v), class: "gridline" }, gAx);
     S("text", { x: left - 6, y: Y(v) + 4, "text-anchor": "end" }, gAx, zahl(v, 1));
   }
+  S("text", { x: 0, y: 10 }, gAx, "TWh je Woche");
   const monate = ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"];
   monate.forEach((m, i) => {
     const x = left + (i * 365 / 12 + 15) / 7 * slot;
@@ -983,8 +1322,9 @@ function renderWeeks() {
   const g = S("g", {}, svg);
   WOCHEN.forEach((v, i) => {
     const x = left + i * slot + (slot - bw) / 2;
-    vBar(g, x, bw, Y(0), Y(v), v < 0 ? "m-serious" : "m-soft");
+    vBar(g, x, bw, Y(0), Y(v), v < 0 ? "d-deficit" : "d-surplus");
   });
+  S("line", { x1: left, x2: W - right, y1: Y(0), y2: Y(0), class: "zeroline" }, svg);
   const cross = S("line", { x1: 0, x2: 0, y1: top, y2: H - bottom, class: "crosshair", visibility: "hidden" }, svg);
   const hit = S("rect", { x: left, y: top, width: plotW, height: plotH, class: "hit", style: "cursor:crosshair" }, svg);
   hit.addEventListener("pointermove", e => {
@@ -1004,9 +1344,13 @@ function renderWeeks() {
   const def = WOCHEN.filter(v => v < 0);
   const sum = -def.reduce((a, b) => a + b, 0);
   const winter1 = -WOCHEN.slice(0, 26).filter(v => v < 0).reduce((a, b) => a + b, 0);
-  document.getElementById("wkSum").textContent =
-    `${def.length} Defizitwochen, zusammen ${twh(sum, 2)} (Studie: 10.7 TWh; die Differenz ist Ablesegenauigkeit). ` +
+  document.getElementById("wkSum").innerHTML =
+    `<strong>${def.length} Defizitwochen, zusammen ${twh(sum, 2)}</strong> (Studie: 10.7 TWh; die Differenz ist Ablesegenauigkeit). ` +
     `Davon ${twh(winter1, 1)} im ersten Halbjahr, fast alles bis Mitte März, und ${twh(sum - winter1, 1)} von Oktober bis Dezember. Die tiefste Woche liegt im Januar mit ${twh(-Math.min(...WOCHEN), 2)}.`;
+}
+function renderWeekTable() {
+  document.getElementById("wkTableBody").innerHTML = WOCHEN.map((v, i) =>
+    `<tr><td>${i + 1}</td><td>${vz(v, 3)}</td><td class="l">${v < 0 ? "Defizit" : v > 0 ? "Überschuss" : "ausgeglichen"}</td></tr>`).join("");
 }
 
 /* ===========================================================================
@@ -1032,7 +1376,7 @@ function renderCop() {
   const tipEl = document.getElementById("copTip");
   clear(svg);
   const W = widthOf(holder);
-  const left = 40, right = 12, top = 12, bottom = 34, H = W < 560 ? 240 : 270;
+  const left = 40, right = 12, top = 22, bottom = 34, H = W < 560 ? 250 : 290;
   const xMin = -15, xMax = 20, yMin = 0, yMax = 8;
   const plotW = W - left - right, plotH = H - top - bottom;
   const X = v => left + (v - xMin) / (xMax - xMin) * plotW;
@@ -1040,19 +1384,21 @@ function renderCop() {
   svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
   svg.setAttribute("height", H);
 
+  // Januarband der Sonde (Fig. A1: Einfamilienhaus etwa −1 bis +2 °C), hinter allem
+  S("rect", { x: X(-1), y: top, width: X(2) - X(-1), height: plotH, class: "ref-area" }, svg);
+
   const gAx = S("g", { class: "ax" }, svg);
-  for (let v = 0; v <= yMax; v += 2) {
-    S("line", { x1: left, x2: W - right, y1: Y(v), y2: Y(v), class: v === 0 ? "axisline" : "gridline" }, gAx);
-    S("text", { x: left - 6, y: Y(v) + 4, "text-anchor": "end" }, gAx, zahl(v, 0));
+  for (let v = 2; v <= yMax; v += 2) {
+    S("line", { x1: left, x2: W - right, y1: Y(v), y2: Y(v), class: "gridline" }, gAx);
   }
+  for (let v = 0; v <= yMax; v += 2) S("text", { x: left - 6, y: Y(v) + 4, "text-anchor": "end" }, gAx, zahl(v, 0));
   for (let t = -15; t <= 20; t += 5) {
     S("text", { x: X(t), y: H - 16, "text-anchor": "middle" }, gAx, zahl(t, 0));
   }
-  S("text", { x: X(20), y: H - 2, "text-anchor": "end" }, gAx, "Quelltemperatur in °C");
-
-  // Januarband der Sonde (Fig. A1: Einfamilienhaus etwa −1 bis +2 °C)
-  S("rect", { x: X(-1), y: top, width: X(2) - X(-1), height: plotH, fill: "var(--series-2)", opacity: 0.08 }, svg);
-  S("text", { x: X(0.5), y: top + 12, "text-anchor": "middle", class: "lbl" }, svg, "Sonde im Januar");
+  S("text", { x: 0, y: 10 }, gAx, "COP");
+  S("text", { x: X(20), y: H - 1, "text-anchor": "end" }, gAx, "Quelltemperatur in °C");
+  S("line", { x1: left, x2: W - right, y1: Y(0), y2: Y(0), class: "zeroline" }, svg);
+  S("text", { x: X(0.5), y: top + 14, "text-anchor": "middle", class: "lbl" }, svg, "Sonde im Januar");
 
   const pts = type => {
     let d = "";
@@ -1064,15 +1410,15 @@ function renderCop() {
     }
     return d;
   };
-  S("path", { d: pts("luft"), class: "l-s1" }, svg);
-  S("path", { d: pts("sonde"), class: "l-s2" }, svg);
+  S("path", { d: pts("luft"), class: "l-air" }, svg);
+  S("path", { d: pts("sonde"), class: "l-ground" }, svg);
 
-  // Typischer Januarbetrieb: Luft 0 °C, Sonde 1 °C
+  // Typischer Januarbetrieb: Luft 0 °C (Quadrat), Sonde 1 °C (Kreis)
   const cL = cop("luft", 0, sinkT), cS = cop("sonde", 1, sinkT);
-  S("circle", { cx: X(0), cy: Y(cL), r: 5, class: "dot-s1" }, svg);
-  S("circle", { cx: X(1), cy: Y(cS), r: 5, class: "dot-s2" }, svg);
-  S("text", { x: X(1) + 9, y: Y(cS) - 6, class: "lbl-1" }, svg, zahl(cS, 1));
-  S("text", { x: X(0) + 9, y: Y(cL) + 15, class: "lbl-1" }, svg, zahl(cL, 1));
+  S("rect", { x: X(0) - 5, y: Y(cL) - 5, width: 10, height: 10, class: "m-air" }, svg);
+  S("circle", { cx: X(1), cy: Y(cS), r: 5.5, class: "m-ground" }, svg);
+  S("text", { x: X(1) + 9, y: Y(cS) - 7, class: "lbl-strong halo" }, svg, zahl(cS, 1));
+  S("text", { x: X(0) + 9, y: Y(cL) + 16, class: "lbl-strong halo" }, svg, zahl(cL, 1));
 
   const cross = S("line", { x1: 0, x2: 0, y1: top, y2: top + plotH, class: "crosshair", visibility: "hidden" }, svg);
   const hit = S("rect", { x: left, y: top, width: plotW, height: plotH, class: "hit", style: "cursor:crosshair" }, svg);
@@ -1091,6 +1437,7 @@ function renderCop() {
   hit.addEventListener("pointerleave", () => { untip(tipEl); cross.setAttribute("visibility", "hidden"); });
 
   const ratio = cS / cL;
+  document.getElementById("copSub").textContent = `COP nach dem Studienmodell, Anhang D · Vorlauf ${sinkT} °C`;
   document.getElementById("copNote").innerHTML =
     `Im Januar bei 0 °C Aussenluft und 1 °C Sondentemperatur: COP <strong>${zahl(cL, 1)}</strong> gegenüber <strong>${zahl(cS, 1)}</strong>. ` +
     `Für dieselbe Wärme braucht die Luft-Wärmepumpe ${zahl((ratio - 1) * 100, 0)}${NB}% mehr Strom. Die Sonde ist im Januar kaum wärmer als die Luft (Fig. A1). ` +
@@ -1098,6 +1445,10 @@ function renderCop() {
     `Lesart der Studie: Abtauabzug unterhalb 5 °C Lufttemperatur; die Studie nennt die Grösse T<sub>evap</sub>.`;
   document.getElementById("copDesc").textContent =
     `Leistungszahl über der Quelltemperatur bei ${sinkT} Grad Vorlauf. Bei 0 Grad Aussenluft COP ${zahl(cL, 1)}, Erdsonde bei 1 Grad COP ${zahl(cS, 1)}.`;
+  const temps = [];
+  for (let t = -15; t <= 20; t += 5) temps.push(t);
+  document.getElementById("copTableBody").innerHTML = temps.map(t =>
+    `<tr><td>${zahl(t, 0)}</td><td>${zahl(cop("luft", t, sinkT), 2)}</td><td>${zahl(cop("sonde", t, sinkT), 2)}</td></tr>`).join("");
 }
 
 /* ===========================================================================
@@ -1121,7 +1472,7 @@ function renderTable() {
   const tb = document.querySelector("#scTable tbody");
   tb.innerHTML = SZ.map(s => {
     const active = result.study && result.study.code === s.code;
-    return `<tr${active ? ' class="is-sel"' : ""}><td class="l">${esc(s.code.replace(/(\D)(\d)/, "$1 $2"))}</td><td class="l">${esc(s.name)}</td>` +
+    return `<tr${active ? ' class="is-sel"' : ""}><td>${esc(s.code.replace(/(\D)(\d)/, "$1 $2"))}</td><td class="l">${esc(s.name)}</td>` +
       `<td>${zahl(s.gap, 2)}</td><td>${vz((s.gap - BASE.gap) / BASE.gap * 100, 1)}${NB}%</td><td>${zahl(s.el, 2)}</td><td>${zahl(s.jan, 2)}</td><td>${s.heat === null ? "–" : zahl(s.heat, 2)}</td></tr>`;
   }).join("");
 }
@@ -1130,7 +1481,7 @@ function renderProof() {
   const rowsHebel = HEBEL.map((h, i) => {
     const c = r.codes[i];
     const f = r.aktiv[i] ? BY[c].el / BASE.el : 1;
-    return `<tr><td class="l">${esc(h.kurz)} ${esc(h.stufen[r.sel[i]].val)}</td><td>${zahl(f, 4)}</td><td>${zahl(r.dE[i], 3)}</td><td>${r.aktiv[i] ? zahl(r.k[i], 3) : "–"}</td><td>${vz(-r.dG[i], 3)}</td></tr>`;
+    return `<tr><td>${esc(h.kurz)} ${esc(h.stufen[r.sel[i]].val)}</td><td>${zahl(f, 4)}</td><td>${zahl(r.dE[i], 3)}</td><td>${r.aktiv[i] ? zahl(r.k[i], 3) : "–"}</td><td>${vz(-r.dG[i], 3)}</td></tr>`;
   }).join("");
   const val = ["Com1", "Com2"].map(c => {
     const s = BY[c];
@@ -1138,15 +1489,15 @@ function renderProof() {
     const m = rechne(s.sel).gapModel;
     let addNeu = BASE.gap;
     s.sel.forEach((lv, i) => { const cc = HEBEL[i].stufen[lv].code; if (cc !== "B") addNeu -= BASE.gap - BY[cc].gap; });
-    const p = v => `${zahl(v, 2)} <span class="small">(${vz((v / s.gap - 1) * 100, 1)}${NB}%)</span>`;
-    return `<tr><td class="l">${esc(s.name)}</td><td>${zahl(s.gap, 2)}</td><td>${p(m)}</td><td>${p(addNeu)}</td></tr>`;
+    const p = v => `${zahl(v, 2)} <span class="muted">(${vz((v / s.gap - 1) * 100, 1)}${NB}%)</span>`;
+    return `<tr><td>${esc(s.name)}</td><td>${zahl(s.gap, 2)}</td><td>${p(m)}</td><td>${p(addNeu)}</td></tr>`;
   }).join("");
 
   document.getElementById("proof").innerHTML = `
     <h3>Aktuelle Auswahl</h3>
     <p>${r.study ? `Von der Studie simuliert (${esc(r.study.name)}). Angezeigt wird der Studienwert ${twh(r.study.gap, 2)}; das Modell ergäbe ${twh(r.gapModel, 2)}.` : `Nicht simuliert. Schätzung aus den Einzelszenarien: ${twh(r.gapModel, 2)}.`}</p>
-    <div class="scroll"><table>
-      <thead><tr><th class="l">Hebel</th><th>Faktor E<sub>i</sub>/E<sub>B</sub></th><th>ΔE<sub>i</sub> [TWh]</th><th>k<sub>i</sub></th><th>ΔG<sub>i</sub> [TWh]</th></tr></thead>
+    <div class="table-wrap"><table class="data">
+      <thead><tr><th>Hebel</th><th>Faktor E<sub>i</sub>/E<sub>B</sub></th><th>ΔE<sub>i</sub> [TWh]</th><th>k<sub>i</sub></th><th>ΔG<sub>i</sub> [TWh]</th></tr></thead>
       <tbody>${rowsHebel}</tbody>
     </table></div>
 
@@ -1160,12 +1511,12 @@ function renderProof() {
 
     <h3>Schritt 3: Winterstromlücke</h3>
     <div class="eq">G = G<sub>B</sub> − Σ<sub>i</sub> k<sub>i</sub> · ΔE<sub>i</sub>, &nbsp; k<sub>i</sub> = (G<sub>B</sub> − G<sub>i</sub>) / (E<sub>B</sub> − E<sub>i</sub>)</div>
-    <p>Der Winterhebel k<sub>i</sub> ist je Massnahme über alle Stufen nahezu konstant (Tabelle oben). Die Lücke reagiert also linear auf die Stromeinsparung einer Massnahme, aber unterschiedlich stark je nachdem, in welchen Wochen sie anfällt. Eine Sättigung der Lücke zeigt sich in den Einzelszenarien bis −44 % nicht.</p>
+    <p>Der Winterhebel k<sub>i</sub> ist je Massnahme über alle Stufen nahezu konstant (Abschnitt Winterhebel). Die Lücke reagiert also linear auf die Stromeinsparung einer Massnahme, aber unterschiedlich stark je nachdem, in welchen Wochen sie anfällt. Eine Sättigung der Lücke zeigt sich in den Einzelszenarien bis −44 % nicht.</p>
 
     <h3>Prüfung an den Kombinationen</h3>
     <p>Die beiden Kombinationsszenarien sind nicht in die Kalibrierung eingegangen.</p>
-    <div class="scroll"><table>
-      <thead><tr><th class="l">Szenario</th><th>Studie</th><th>dieses Modell</th><th>Summe der Einzeleffekte</th></tr></thead>
+    <div class="table-wrap"><table class="data">
+      <thead><tr><th>Szenario</th><th>Studie</th><th>dieses Modell</th><th>Summe der Einzeleffekte</th></tr></thead>
       <tbody>${val}</tbody>
     </table></div>
 
@@ -1215,25 +1566,52 @@ function jsonAll() {
 }
 
 /* ===========================================================================
-   Darstellung umschalten: Auto → Hell → Dunkel
+   Darstellung: Auto, Hell, Dunkel
    ========================================================================== */
 function initTheme() {
-  const btn = document.getElementById("theme");
-  const order = ["auto", "light", "dark"], names = { auto: "Auto", light: "Hell", dark: "Dunkel" };
+  const btns = [...document.querySelectorAll("[data-theme-set]")];
+  const meta = document.querySelector('meta[name="theme-color"]');
   let mode = "auto";
   try { mode = localStorage.getItem("wsl-theme") || "auto"; } catch (e) { /* kein Speicher */ }
   const apply = () => {
     if (mode === "auto") document.documentElement.removeAttribute("data-theme");
     else document.documentElement.setAttribute("data-theme", mode);
-    btn.textContent = names[mode];
-    btn.setAttribute("aria-label", "Darstellung: " + names[mode] + ". Umschalten.");
+    btns.forEach(b => b.setAttribute("aria-pressed", b.dataset.themeSet === mode ? "true" : "false"));
+    meta.setAttribute("content", getComputedStyle(document.body).backgroundColor);
   };
-  btn.addEventListener("click", () => {
-    mode = order[(order.indexOf(mode) + 1) % order.length];
+  btns.forEach(b => b.addEventListener("click", () => {
+    mode = b.dataset.themeSet;
     try { localStorage.setItem("wsl-theme", mode); } catch (e) { /* kein Speicher */ }
     apply();
-  });
+  }));
   apply();
+}
+
+/* Tabellenalternative je Diagramm */
+function initTableToggles() {
+  document.querySelectorAll("[data-table]").forEach(b => {
+    const t = document.getElementById(b.dataset.table);
+    b.addEventListener("click", () => {
+      t.hidden = !t.hidden;
+      b.setAttribute("aria-expanded", t.hidden ? "false" : "true");
+    });
+  });
+}
+
+/* Navigation: markiert den Abschnitt, der gerade oben im Fenster steht */
+function initNav() {
+  const links = [...document.querySelectorAll(".nav-item")];
+  const secs = links.map(a => document.querySelector(a.getAttribute("href")));
+  let ticking = false;
+  const spy = () => {
+    ticking = false;
+    let cur = 0;
+    secs.forEach((s, i) => { if (s.getBoundingClientRect().top <= 140) cur = i; });
+    if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4) cur = secs.length - 1;
+    links.forEach((a, i) => i === cur ? a.setAttribute("aria-current", "true") : a.removeAttribute("aria-current"));
+  };
+  window.addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(spy); } }, { passive: true });
+  spy();
 }
 
 function renderAll() {
@@ -1247,6 +1625,8 @@ function renderAll() {
 initTheme();
 buildControls();
 renderLever();
+renderWeekTable();
+initTableToggles();
 document.querySelectorAll("[data-sink]").forEach(b => {
   b.addEventListener("click", () => {
     sinkT = Number(b.dataset.sink);
@@ -1260,12 +1640,13 @@ document.getElementById("dlJson").addEventListener("click", () => download("wint
 update();
 renderWeeks();
 renderCop();
+initNav();
 
 let resizeTimer = null;
 new ResizeObserver(() => {
   clearTimeout(resizeTimer);
   resizeTimer = setTimeout(() => { renderAll(); renderWeeks(); renderCop(); }, 80);
-}).observe(document.querySelector(".wrap"));
+}).observe(document.getElementById("inhalt"));
 </script>
 </body>
 </html>
